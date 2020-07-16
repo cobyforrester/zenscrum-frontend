@@ -1,31 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-import axios from 'axios';
 
+import {ProjectsList} from './projects'
 
-const loadProjects = () => {
-  return axios.get('http://127.0.0.1:8000/api/projects/')
-  .then((response) => {
-    return response
-  })
-  .catch(error => {
-    return Promise.reject(error);
-  });
-}
 
 function App() {
-  const [projects, setProjects] = useState([])
-  useEffect(() => {
-    loadProjects().then(response =>{
-      if(response.status === 200){
-        setProjects(response.data);
-      }
-    }).catch(error =>{
-      console.log(error)
-    });
-  }, []);
 
   return (
     <div className="App">
@@ -34,11 +15,9 @@ function App() {
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
-        <p>
-          {projects.map((project, index) => {
-            return <li>{project.title}</li>
-          })}
-        </p>
+        <div>
+          <ProjectsList />
+        </div>
         <a
           className="App-link"
           href="https://reactjs.org"
