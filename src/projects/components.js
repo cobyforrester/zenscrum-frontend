@@ -20,52 +20,75 @@ return projects.map((item, index) => {
 })
 }
 
-export const ActionMemberBtn = (props) => {
-    const {action, className, clickedFunc} = props
-    const description = action.description
+export const ActionMemberBtns = () => {
+    let addBtn= {
+        className: 'btn btn-success btn-sm',
+        description: 'Add Username',
+        type: 'add',
+    }
+    let rmvBtn= {
+        className: 'btn btn-danger btn-sm',
+        description: 'Remove User',
+        type: 'remove',
+    }
+    let edtBtn= {
+        className: 'btn btn-info btn-sm',
+        description: 'Add/Remove Members',
+        type: 'edit',
+    }
+    let cnclBtn= {
+        className: 'btn btn-light btn-sm',
+        description: 'Cancel',
+        type: 'cancel',
+    }
+    let initialMemberChange = { //for state changes
+        clicked: false,
+        change: ' d-none',
+        neutral: '',
+    }
+    const [memberChange, setMemberChange] = useState(initialMemberChange) //dealing with button click change
+    const clickedFunc = () => { //This deals with if a button is clicked
+        if (memberChange.clicked) {
+            setMemberChange(prevState => {
+                return {...prevState, clicked:false, change: ' d-none', neutral: ''}
+            })
+        }
+        else {
+            setMemberChange(prevState => {
+                return {...prevState, clicked:true, change: '', neutral: ' d-none'}
+            })
+        }
+    }
 
     //const [clickAddRemove, setClickAddRemove] = useState(false)
     return <>
-        <button onClick={() => {
-        clickedFunc();
-    }} className={className} >{description}</button>
+        <form className={memberChange.change}>
+            <input type="text"  placeholder="Enter Username" />
+        </form>
+        <div className='btn btn-group'>
+            <button onClick={() => {
+                clickedFunc();
+            }} className={addBtn.className + memberChange.change} >{addBtn.description}</button>
+
+            <button onClick={() => {
+                clickedFunc();
+            }} className={rmvBtn.className + memberChange.change} >{rmvBtn.description}</button>
+
+            <button onClick={() => {
+                clickedFunc();
+            }} className={edtBtn.className + memberChange.neutral} >{edtBtn.description}</button>
+
+            <button onClick={() => {
+                clickedFunc();
+            }} className={cnclBtn.className + memberChange.change} >{cnclBtn.description}</button>
+            
+        </div>
         </>
 
-  }
+}
   
 export const Project = (props) => {
 const {project} = props;
-
-// INITIAL VALUES FOR STATE, CLICKED = FALSE
-let tmpState = {
-    clicked: false,
-    addBtnClass: 'btn btn-success btn-sm d-none',
-    rmvBtnClass: 'btn btn-danger btn-sm d-none',
-    edtBtnClass: 'btn btn-info btn-sm',
-    memberFormState: 'd-none',
-}
-const [state, setState] = useState(tmpState) //this is just whether add or not is seen
-const clickedFunc = () => { //This deals with if a button is clicked
-    if (state.clicked) {
-        setState({...state, 
-            clicked: false,
-            addBtnClass: 'btn btn-success btn-sm d-none',
-            rmvBtnClass: 'btn btn-danger btn-sm d-none', 
-            edtBtnClass: 'btn btn-info btn-sm',
-            memberFormState: 'd-none',
-        })
-    }
-    else {
-        setState({...state, 
-            clicked: true,
-            addBtnClass: 'btn btn-success btn-sm',
-            rmvBtnClass: 'btn btn-danger btn-sm',
-            edtBtnClass: 'btn btn-info btn-sm d-none', 
-            memberFormState: '',
-        })
-    }
-}
-useEffect(() => {}, [state]);
 
 return <div className='col-10 mx-auto col-md-6'>
 
@@ -75,19 +98,10 @@ return <div className='col-10 mx-auto col-md-6'>
         <h5 className="card-title">Started: {project.begin_date}</h5>
         <h5 className="card-title">Project Owner {project.user.username}</h5>
         <p className="card-text">{project.description}</p>
-        <form className={state.memberFormState}>
-            <input type="text"  placeholder="Enter Username" />
-        </form>
-
-        <div className='btn btn-group'>
-            <ActionMemberBtn clickedFunc={clickedFunc} action={{type: 'add', description: 'Add Username'}} className={state.addBtnClass} />
-            <ActionMemberBtn clickedFunc={clickedFunc} action={{type: 'remove', description: 'Remove Username'}} className={state.rmvBtnClass} />
-            <ActionMemberBtn clickedFunc={clickedFunc} action={{type: 'edit', description: 'Add/Remove Members'}} className={state.edtBtnClass} />
-        </div>
+            <ActionMemberBtns />
         
-  </div>
-</div>
-
+        </div>
+    </div>
 </div>
 }
 

@@ -11,7 +11,7 @@ function App() {
       <header className="App-header">
       </header>
       <div>
-          <ProjectsListAsTable />
+          <ProjectsList />
         </div>
     </div>
   );
