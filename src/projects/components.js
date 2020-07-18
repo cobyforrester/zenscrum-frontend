@@ -68,16 +68,23 @@ export const ActionMemberBtns = (props) => {
     }
     const [memberChange, setMemberChange] = useState(initialMemberChange) //dealing edit btn + add/remove
     const refMemberForm = useRef();
-    const clickedFunc = () => { //This deals with if edit clicked or member added/removed
+    const clickedFunc = (success, message) => { //This deals with if edit clicked or member added/removed
         if (memberChange.clicked) {
+            let alertClass = ' d-none'
+            let alertMessage = ''
+            if (success === 'success') {
+                console.log('success')
+                alertClass = 'alert alert-success'
+                alertMessage = message
+            }
             setMemberChange(prevState => {
                 return {
                     ...prevState, 
                     clicked:false, 
                     change: ' d-none', 
                     neutral: '',
-                    alertClass: 'd-none', 
-                    alertMessage: '',
+                    alertClass: alertClass, 
+                    alertMessage: alertMessage,
                 }
             })
         }
@@ -108,27 +115,69 @@ export const ActionMemberBtns = (props) => {
             });
         }
         else {
-            actionMemberPost(project.id, action, member).then(response => {
-            if(response.status === 200 || response.status === 201){
-                console.log(response.status)
-                clickedFunc();
-            }
-            else {
-                console.log(response.message)
-            }
-            }).catch(error => {
-            console.log(error.message)
-            setMemberChange(prevState => {
-                return {
-                    ...prevState, 
-                    alertClass: 'alert alert-danger', 
-                    alertMessage: 'Submit Error: ' + error.message,
+            actionMemberPost(project.id, action, member)
+            .then(response => {
+                if(response.status === 200 || response.status === 201){
+                    let alertMessage = ''
+                    if (action === 'add') {
+                        setMemberChange(prevState => {
+                            return {
+                                ...prevState, 
+                                clicked:false, 
+                                change: ' d-none', 
+                                neutral: '',
+                                alertClass: 'alert alert-success', 
+                                alertMessage: member + ' was Added',
+                            }
+                        });
+                        alertMessage = member + ' was Added'
+                        refMemberForm.current.value = ''
+                    } else {
+                        setMemberChange(prevState => {
+                            return {
+                                ...prevState, 
+                                clicked:false, 
+                                change: ' d-none', 
+                                neutral: '',
+                                alertClass: 'alert alert-success', 
+                                alertMessage: member + ' Removed',
+                            }
+                        });
+                        alertMessage = member + ' was Removed'
+                    }
+                    clickedFunc('success', alertMessage);
+                }else {
+                    setMemberChange(prevState => {
+                        return {
+                            ...prevState, 
+                            alertClass: 'alert alert-danger', 
+                            alertMessage: 'Submit Error: ' + response.message,
+                        }
+                        });
                 }
-                });
+            })
+            .catch(error => {
+                console.log(error.response.status)
+                let errorMessage = ''
+                if (error.response.data.message === undefined) {
+                    if (error.response.status === 403) {
+                        errorMessage = 'Database Error: You are not logged in'
+                    }else {
+                        errorMessage = error.message
+                    }
+                }else {
+                    errorMessage = 'Database Error: ' + error.response.data.message
+                }
+                setMemberChange(prevState => {
+                    return {
+                        ...prevState, 
+                        alertClass: 'alert alert-danger', 
+                        alertMessage: errorMessage,
+                    }
+                    });
             });
         }
     }
-    //const [clickAddRemove, setClickAddRemove] = useState(false)
     return <>
         <div className={memberChange.alertClass} role="alert">
         {memberChange.alertMessage}
@@ -150,6 +199,7 @@ export const ActionMemberBtns = (props) => {
             }} className={edtBtn.className + memberChange.neutral} >{edtBtn.description}</button>
 
             <button onClick={() => {
+                refMemberForm.current.value = ''
                 clickedFunc();
             }} className={cnclBtn.className + memberChange.change} >{cnclBtn.description}</button>
         </div>
