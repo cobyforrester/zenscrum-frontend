@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 
 
-import {ProjectsList, ProjectsListAsTable} from './projects'
+import {ProjectsList} from './projects'
 
 
 function App() {

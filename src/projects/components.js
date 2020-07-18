@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import {loadProjects} from '../lookup';
+import React, { useEffect, useState, useRef } from 'react';
+import { loadProjects, actionMemberPost } from '../lookup';
   
 
 // All Below for box view
@@ -20,7 +20,25 @@ return projects.map((item, index) => {
 })
 }
 
-export const ActionMemberBtns = () => {
+export const Project = (props) => {
+const {project} = props;
+
+return <div className='col-10 mx-auto col-md-6'>
+
+    <div className="card border mb-4 mt-4">
+        <div className="card-body">
+        <h2 className="card-title">{project.title}</h2>
+        <h5 className="card-title">Started: {project.begin_date}</h5>
+        <h5 className="card-title">Project Owner {project.user.username}</h5>
+        <p className="card-text">{project.description}</p>
+        <ActionMemberBtns project={project} />
+        </div>
+    </div>
+</div>
+}
+
+export const ActionMemberBtns = (props) => {
+    const {project} = props
     let addBtn= {
         className: 'btn btn-success btn-sm',
         description: 'Add Username',
@@ -45,33 +63,86 @@ export const ActionMemberBtns = () => {
         clicked: false,
         change: ' d-none',
         neutral: '',
+        alertClass: 'd-none',
+        alertMessage: '',
     }
-    const [memberChange, setMemberChange] = useState(initialMemberChange) //dealing with button click change
-    const clickedFunc = () => { //This deals with if a button is clicked
+    const [memberChange, setMemberChange] = useState(initialMemberChange) //dealing edit btn + add/remove
+    const refMemberForm = useRef();
+    const clickedFunc = () => { //This deals with if edit clicked or member added/removed
         if (memberChange.clicked) {
             setMemberChange(prevState => {
-                return {...prevState, clicked:false, change: ' d-none', neutral: ''}
+                return {
+                    ...prevState, 
+                    clicked:false, 
+                    change: ' d-none', 
+                    neutral: '',
+                    alertClass: 'd-none', 
+                    alertMessage: '',
+                }
             })
         }
         else {
             setMemberChange(prevState => {
-                return {...prevState, clicked:true, change: '', neutral: ' d-none'}
+                return {
+                    ...prevState, 
+                    clicked:true, 
+                    change: '', 
+                    neutral: ' d-none',
+                    alertClass: 'd-none', 
+                    alertMessage: '',
+                }
             })
         }
     }
 
+    const doAddRemove = (action) => {
+        let member = refMemberForm.current.value
+        console.log(member)
+        if (member === '') {
+            setMemberChange(prevState => {
+                return {
+                    ...prevState, 
+                    alertClass: 'alert alert-danger', 
+                    alertMessage: 'Format Error: No username typed',
+                }
+            });
+        }
+        else {
+            actionMemberPost(project.id, action, member).then(response => {
+            if(response.status === 200 || response.status === 201){
+                console.log(response.status)
+                clickedFunc();
+            }
+            else {
+                console.log(response.message)
+            }
+            }).catch(error => {
+            console.log(error.message)
+            setMemberChange(prevState => {
+                return {
+                    ...prevState, 
+                    alertClass: 'alert alert-danger', 
+                    alertMessage: 'Submit Error: ' + error.message,
+                }
+                });
+            });
+        }
+    }
     //const [clickAddRemove, setClickAddRemove] = useState(false)
     return <>
-        <form className={memberChange.change}>
-            <input type="text"  placeholder="Enter Username" />
+        <div className={memberChange.alertClass} role="alert">
+        {memberChange.alertMessage}
+        </div>
+        <form className={memberChange.change} >
+            <input ref={refMemberForm} type="text"  placeholder="Enter Username" />
         </form>
         <div className='btn btn-group'>
             <button onClick={() => {
-                clickedFunc();
+                doAddRemove('add');
             }} className={addBtn.className + memberChange.change} >{addBtn.description}</button>
 
             <button onClick={() => {
-                clickedFunc();
+                doAddRemove('remove');
             }} className={rmvBtn.className + memberChange.change} >{rmvBtn.description}</button>
 
             <button onClick={() => {
@@ -81,30 +152,9 @@ export const ActionMemberBtns = () => {
             <button onClick={() => {
                 clickedFunc();
             }} className={cnclBtn.className + memberChange.change} >{cnclBtn.description}</button>
-            
         </div>
         </>
-
 }
-  
-export const Project = (props) => {
-const {project} = props;
-
-return <div className='col-10 mx-auto col-md-6'>
-
-    <div className="card border mb-4 mt-4">
-        <div className="card-body">
-        <h2 className="card-title">{project.title}</h2>
-        <h5 className="card-title">Started: {project.begin_date}</h5>
-        <h5 className="card-title">Project Owner {project.user.username}</h5>
-        <p className="card-text">{project.description}</p>
-            <ActionMemberBtns />
-        
-        </div>
-    </div>
-</div>
-}
-
 // All below for table view
 
 export const ProjectsListAsTable = (props) => {

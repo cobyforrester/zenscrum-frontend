@@ -1,5 +1,6 @@
-import {loadProjects} from './components'
+import { loadProjects, actionMemberPost } from './components'
 
 export {
     loadProjects,
+    actionMemberPost,
 }
