@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {loadProjects} from '../lookup';
   
+
+// All Below for box view
 export const ProjectsList = (props) => {
 const [projects, setProjects] = useState([])
 useEffect(() => {
@@ -23,11 +25,11 @@ export const ActionMemberBtn = (props) => {
     const description = action.description
 
     //const [clickAddRemove, setClickAddRemove] = useState(false)
-    return <div>
+    return <>
         <button onClick={() => {
         clickedFunc();
     }} className={className} >{description}</button>
-        </div>
+        </>
 
   }
   
@@ -43,7 +45,7 @@ let tmpState = {
     memberFormState: 'd-none',
 }
 const [state, setState] = useState(tmpState) //this is just whether add or not is seen
-const clickedFunc = () => {
+const clickedFunc = () => { //This deals with if a button is clicked
     if (state.clicked) {
         setState({...state, 
             clicked: false,
@@ -69,15 +71,17 @@ return <div className='col-10 mx-auto col-md-6'>
 
     <div className="card border mb-4 mt-4">
         <div className="card-body">
-        <h5 className="card-title">Project: {project.title} - {project.id}</h5>
-        <p className="card-text">With supporting text below as a natural lead-in to additional content.</p>
+        <h2 className="card-title">{project.title}</h2>
+        <h5 className="card-title">Started: {project.begin_date}</h5>
+        <h5 className="card-title">Project Owner {project.user.username}</h5>
+        <p className="card-text">{project.description}</p>
         <form className={state.memberFormState}>
             <input type="text"  placeholder="Enter Username" />
         </form>
 
         <div className='btn btn-group'>
-            <ActionMemberBtn clickedFunc={clickedFunc} action={{type: 'add', description: 'Add To Project'}} className={state.addBtnClass} />
-            <ActionMemberBtn clickedFunc={clickedFunc} action={{type: 'remove', description: 'Remove From Project'}} className={state.rmvBtnClass} />
+            <ActionMemberBtn clickedFunc={clickedFunc} action={{type: 'add', description: 'Add Username'}} className={state.addBtnClass} />
+            <ActionMemberBtn clickedFunc={clickedFunc} action={{type: 'remove', description: 'Remove Username'}} className={state.rmvBtnClass} />
             <ActionMemberBtn clickedFunc={clickedFunc} action={{type: 'edit', description: 'Add/Remove Members'}} className={state.edtBtnClass} />
         </div>
         
@@ -86,3 +90,40 @@ return <div className='col-10 mx-auto col-md-6'>
 
 </div>
 }
+
+// All below for table view
+
+export const ProjectsListAsTable = (props) => {
+    const [projects, setProjects] = useState([])
+    useEffect(() => {
+        loadProjects().then(response => {
+        if(response.status === 200){
+            setProjects(response.data);
+        }
+        }).catch(error => {
+        console.log(error)
+        });
+    }, []);
+    return <div className='container'>
+        <table className="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Title</th>
+            <th scope="col">Owner</th>
+            <th scope="col">Members</th>
+          </tr>
+        </thead>
+        <tbody>
+            {projects.map((item, index) => 
+                <tr >
+                    <th scope="row">{index + 1}</th>
+                    <td>{item.title}</td>
+                    <td>{item.user.username}</td>
+                    <td>{item.begin_date}</td>
+                </tr>
+            )}
+        </tbody>
+      </table>
+      </div>
+    }

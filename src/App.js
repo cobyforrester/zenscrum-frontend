@@ -2,17 +2,16 @@ import React from 'react';
 import './App.css';
 
 
-import {ProjectsList} from './projects'
+import {ProjectsList, ProjectsListAsTable} from './projects'
 
 
 function App() {
-
   return (
     <div className="App">
       <header className="App-header">
       </header>
       <div>
-          <ProjectsList />
+          <ProjectsListAsTable />
         </div>
     </div>
   );

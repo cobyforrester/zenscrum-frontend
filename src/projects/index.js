@@ -1,5 +1,6 @@
-import {ProjectsList} from './components'
+import { ProjectsList, ProjectsListAsTable } from './components'
 
 export {
     ProjectsList,
+    ProjectsListAsTable,
 }
