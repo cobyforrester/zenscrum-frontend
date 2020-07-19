@@ -2,6 +2,25 @@ import React, { useEffect, useState, useRef } from 'react';
 import { loadProjects, actionMemberPost } from '../lookup';
   
 
+// All code blow for creating new project
+export const ProjectComponent = (props) => {
+    const {className} = props
+        const handleSubmit = (event) => {
+            event.preventDefault()
+            console.log(event)
+        }
+        return <div className={className}>
+                <div className='create-project-form col-md-4 mx-auto col-10 my-3'>   
+                    <form onSubmit={handleSubmit}>
+                        <textarea name='title' className='form-control' placeholder='Project Name'></textarea>
+                        <textarea name='description' className='form-control' placeholder='Description'></textarea>
+                        <button type='submit' className='btn btn-success my-3'>Create Project</button>
+                    </form>
+                </div>
+                <ProjectsList />
+            </div>
+    }
+
 // All Below for box view
 export const ProjectsList = (props) => {
 const [projects, setProjects] = useState([])
@@ -40,22 +59,22 @@ return <div className='col-10 mx-auto col-md-6'>
 export const ActionMemberBtns = (props) => {
     const {project} = props
     let addBtn= {
-        className: 'btn btn-success btn-sm',
+        className: 'btn btn-success btn-sm mx-1',
         description: 'Add Username',
         type: 'add',
     }
     let rmvBtn= {
-        className: 'btn btn-danger btn-sm',
+        className: 'btn btn-danger btn-sm mx-1',
         description: 'Remove User',
         type: 'remove',
     }
     let edtBtn= {
-        className: 'btn btn-info btn-sm',
+        className: 'btn btn-info btn-sm mx-1',
         description: 'Add/Remove Members',
         type: 'edit',
     }
     let cnclBtn= {
-        className: 'btn btn-light btn-sm',
+        className: 'btn btn-light btn-sm mx-1',
         description: 'Cancel',
         type: 'cancel',
     }
@@ -183,7 +202,7 @@ export const ActionMemberBtns = (props) => {
         {memberChange.alertMessage}
         </div>
         <form className={memberChange.change} >
-            <input ref={refMemberForm} type="text"  placeholder="Enter Username" />
+            <textarea className='member-form' ref={refMemberForm}  placeholder="Enter Username"></textarea>
         </form>
         <div className='btn btn-group'>
             <button onClick={() => {

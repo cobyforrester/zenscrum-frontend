@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 
 
-import {ProjectsList} from './projects'
+import {ProjectComponent} from './projects'
 
 
 function App() {
@@ -11,8 +11,8 @@ function App() {
       <header className="App-header">
       </header>
       <div>
-          <ProjectsList />
-        </div>
+          <ProjectComponent />
+      </div>
     </div>
   );
 }

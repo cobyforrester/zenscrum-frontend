@@ -38,3 +38,9 @@
     transform: rotate(360deg);
   }
 }
+
+/* Custom */
+.member-form {
+  height: 32px;
+  width: 55%;
+}
