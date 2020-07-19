@@ -5,20 +5,46 @@ import { loadProjects, actionMemberPost } from '../lookup';
 // All code blow for creating new project
 export const ProjectComponent = (props) => {
     const {className} = props
-        const handleSubmit = (event) => {
-            event.preventDefault()
-            console.log(event)
-        }
-        return <div className={className}>
-                <div className='create-project-form col-md-4 mx-auto col-10 my-3'>   
-                    <form onSubmit={handleSubmit}>
-                        <textarea name='title' className='form-control' placeholder='Project Name'></textarea>
+    const handleSubmit = (event) => {
+        event.preventDefault()
+        console.log(event)
+    }
+
+    const [isClicked, setIsClicked] = useState(false)
+    
+    //const refTitle = useRef();
+
+
+    return <div className={className}>
+            <div className='create-project-form col-md-4 mx-auto col-10 my-3'>   
+                <form onSubmit={handleSubmit}>
+                        {isClicked ? 
+                        <textarea name='title' className='form-control my-3' placeholder='Project Name'></textarea>
+                        : null }
+                        {isClicked ? 
                         <textarea name='description' className='form-control' placeholder='Description'></textarea>
-                        <button type='submit' className='btn btn-success my-3'>Create Project</button>
-                    </form>
-                </div>
-                <ProjectsList />
+                        : null }
+                    <div className='btn btn-group'>
+                        {isClicked ? 
+                        <button onClick={() => {
+                        setIsClicked(false)
+                        }} type='submit' className='btn btn-warning my-2 mx-1'>Submit</button>
+                        : null }
+                        {isClicked ? 
+                        <button onClick={() => {
+                        setIsClicked(false)
+                        }}type='submit' className='btn btn-secondary my-2 mx-1'>Cancel</button>
+                        : null }
+                        {!isClicked ? 
+                        <button onClick={() => {
+                        setIsClicked(true)
+                        }} type='submit' className='btn btn-success my-2 mx-1'>Create New Project</button>
+                        : null }
+                    </div>
+                </form>
             </div>
+            <ProjectsList />
+        </div>
     }
 
 // All Below for box view
