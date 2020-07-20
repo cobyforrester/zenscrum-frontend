@@ -4,11 +4,22 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+import { Provider as AlertProvider } from 'react-alert'
+import AlertTemplate from 'react-alert-template-basic'
+
+//alert options
+const alertOptions = {
+  timeout: 3000,
+  position: 'bottom center',
+}
+
 const appEl = document.getElementById('root')
 if (appEl) {
   ReactDOM.render(
     <React.StrictMode>
-      <App />
+      <AlertProvider template={AlertTemplate} {...alertOptions}>
+        <App />
+      </AlertProvider>
     </React.StrictMode>,
     appEl
   );

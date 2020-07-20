@@ -1,7 +1,6 @@
 import React from 'react';
 import './App.css';
 
-
 import {ProjectComponent} from './projects'
 
 
@@ -10,9 +9,9 @@ function App() {
     <div className="App">
       <header className="App-header">
       </header>
-      <div>
-          <ProjectComponent />
-      </div>
+        <div>
+            <ProjectComponent />
+        </div>
     </div>
   );
 }

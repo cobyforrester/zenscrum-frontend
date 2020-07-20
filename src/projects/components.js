@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { lookup } from '../lookup';
+import { useAlert } from 'react-alert'
   
 
 // All code blow for creating new project
@@ -11,8 +12,9 @@ export const ProjectComponent = (props) => {
     const refDescription = useRef();
 
     const [isClicked, setIsClicked] = useState(false)
-    const [alertStatus, setAlertStatus] = useState(0) //0 is no alert, 1 success, 2 failure
-    const [alertMessage, setAlertMessage] = useState('')
+
+    const alert = useAlert()
+
 
     const handleSubmit = (event) => {
         event.preventDefault()
@@ -32,47 +34,25 @@ export const ProjectComponent = (props) => {
                 refDescription.current.value = ''
                 setIsClicked(false)
                 message = 'Project ' + response.data.title + ' was successfully created!'
-                setAlertMessage(message)
-                setAlertStatus(1)
+                alert.show(message, {type: 'success'})
 
             }
             }).catch(error => {
             console.log(error)
             if (error.response && error.response.message) {
-                setAlertMessage(error)
+                alert.show(error.response.message, {type: 'error'})
             } else if (error.response && error.response.status === 403) {
-                setAlertMessage('Database Error: You are not logged in')
+                alert.show('Database Error: You are not logged in', {type: 'error'})
             } else {
-                setAlertMessage(error.response.message)
+                alert.show(error.response.message, {type: 'error'})
             }
-            setAlertStatus(2)
             });
-
-        //change this to a server side call
-        /*
-        tempNewProjects.unshift({ //newwest on top
-            title: title,
-            description: description,
-            id: 3333,
-            begin_date: Date.now(),
-            user: {username: 'cobyforrester'}
-        })
-        */
     }
 
     
 
     return <div className={className}>
-            <div className='create-project-form col-md-4 mx-auto col-10 my-3'>  
-
-            {alertStatus === 1 ? 
-            <div className='alert alert-success' role="alert">{alertMessage}</div>
-            : null}
-
-            {alertStatus === 2 ? 
-                <div className='alert alert-danger' role="alert">{alertMessage}</div>
-            : null}
-
+            <div className='create-project-form col-md-4 mx-auto col-10 my-3'> 
                 <form onSubmit={handleSubmit}>
                         {isClicked ? 
                         <textarea ref={refTitle} required={true} name='title' className='form-control my-3' placeholder='Project Name'></textarea>
@@ -87,13 +67,11 @@ export const ProjectComponent = (props) => {
                         {isClicked ? 
                         <button onClick={() => {
                         setIsClicked(false)
-                        setAlertStatus(0)
                         }}type='submit' className='btn btn-secondary my-2 mx-1'>Cancel</button>
                         : null }
                         {!isClicked ? 
                         <button onClick={() => {
                         setIsClicked(true)
-                        setAlertStatus(0)
                         }} type='submit' className='btn btn-success my-2 mx-1'>Create New Project</button>
                         : null }
                     </div>
@@ -150,15 +128,13 @@ return <div className='col-10 mx-auto col-md-6'>
 export const ActionMemberBtns = (props) => {
     const {project} = props
     const [isClicked, setIsClicked] = useState(false)
-    const [alertMessage, setAlertMessage] = useState('')
-    const [alertStatus, setAlertStatus] = useState(0) // 0 is nothing, 1 is success, 2 is failure
     const refMemberForm = useRef();
+    const alert = useAlert()
 
     const doAddRemove = (action) => {
         let member = refMemberForm.current.value
         if (member === '') {
-            setAlertMessage('Error: No username typed')
-            setAlertStatus(2)
+            alert.show('Error: No username typed', {type: 'error'})
         }
         else {
             lookup('post', 'projects/action/', {id:project.id, action: action, member: member}, {})
@@ -172,8 +148,7 @@ export const ActionMemberBtns = (props) => {
                     } else {
                         alertMessage = 'Success! User ' + member + ' was removed from project'
                     }
-                    setAlertMessage(alertMessage)
-                    setAlertStatus(1)
+                    alert.show(alertMessage, {type: 'success'})
                     refMemberForm.current.value = ''
                 }
             })
@@ -188,19 +163,11 @@ export const ActionMemberBtns = (props) => {
                 }else {
                     errorMessage = 'Database Error: ' + error.response.data.message
                 }
-                setAlertMessage(errorMessage)
-                setAlertStatus(2)
+                alert.show(errorMessage, {type: 'error'})
             });
         }
     }
     return <>
-        {alertStatus === 1 ? 
-            <div className='alert alert-success' role="alert">{alertMessage}</div>
-        : null}
-
-        {alertStatus === 2 ? 
-            <div className='alert alert-danger' role="alert">{alertMessage}</div>
-        : null}
 
         <form>
         {isClicked ? 
@@ -224,7 +191,6 @@ export const ActionMemberBtns = (props) => {
             {!isClicked ? 
                 <button onClick={() => {
                     setIsClicked(true)
-                    setAlertStatus(0)
                 }} className='btn btn-info btn-sm mx-1' >Add/Remove Members</button>
             : null}
 
@@ -232,7 +198,6 @@ export const ActionMemberBtns = (props) => {
                 <button onClick={() => {
                     refMemberForm.current.value = ''
                     setIsClicked(false)
-                    setAlertStatus(0)
                 }} className='btn btn-light btn-sm mx-1' >Cancel</button>
             : null}
 
