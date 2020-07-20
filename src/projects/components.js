@@ -85,7 +85,7 @@ export const ProjectComponent = (props) => {
 export const ProjectsList = (props) => {
 const [projectsInit, setProjectsInit] = useState([])
 const [projects, setProjects] = useState([])
-
+const alert = useAlert()
 useEffect(() => { //if property changes combine initial projects with what is added
     const final = [...props.newProjects].concat(projectsInit)
     if (final.length !== projects.length) {
@@ -100,8 +100,9 @@ useEffect(() => {
     }
     }).catch(error => {
     console.log(error)
+    alert.show('Database Error: Trouble loading projects', {type: 'error'})
     });
-}, []);
+}, [alert]);
 return projects.map((item, index) => {
     return <Project project = {item} key={`${index}-item.id`} />
 
