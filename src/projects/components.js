@@ -6,13 +6,50 @@ import { lookup } from '../lookup';
 export const ProjectComponent = (props) => {
     const {className} = props
     const [newProjects, setNewProjects] = useState([])
+
+    const refTitle = useRef();
+    const refDescription = useRef();
+
+    const [isClicked, setIsClicked] = useState(false)
+    const [alertStatus, setAlertStatus] = useState(0) //0 is no alert, 1 success, 2 failure
+    const [alertMessage, setAlertMessage] = useState('')
+
     const handleSubmit = (event) => {
         event.preventDefault()
-        const title = refTitle.current.value
-        const description = refDescription.current.value
+        const data = {
+            title: refTitle.current.value,
+            description: refDescription.current.value
+        }
 
         let tempNewProjects = [...newProjects]
+
+        lookup('post', 'projects/create/', data, {}).then(response => {
+            let message = ''
+            if(response.status === 201){
+                tempNewProjects.unshift(response.data)
+                setNewProjects(tempNewProjects)
+                refTitle.current.value = ''
+                refDescription.current.value = ''
+                setIsClicked(false)
+                message = 'Project ' + response.data.title + ' was successfully created!'
+                setAlertMessage(message)
+                setAlertStatus(1)
+
+            }
+            }).catch(error => {
+            console.log(error)
+            if (error.response && error.response.message) {
+                setAlertMessage(error)
+            } else if (error.response && error.response.status === 403) {
+                setAlertMessage('Database Error: You are not logged in')
+            } else {
+                setAlertMessage(error.response.message)
+            }
+            setAlertStatus(2)
+            });
+
         //change this to a server side call
+        /*
         tempNewProjects.unshift({ //newwest on top
             title: title,
             description: description,
@@ -20,18 +57,22 @@ export const ProjectComponent = (props) => {
             begin_date: Date.now(),
             user: {username: 'cobyforrester'}
         })
-        setNewProjects(tempNewProjects)
-        refTitle.current.value = ''
-        refDescription.current.value = ''
+        */
     }
 
-    const [isClicked, setIsClicked] = useState(false)
     
-    const refTitle = useRef();
-    const refDescription = useRef();
 
     return <div className={className}>
-            <div className='create-project-form col-md-4 mx-auto col-10 my-3'>   
+            <div className='create-project-form col-md-4 mx-auto col-10 my-3'>  
+
+            {alertStatus === 1 ? 
+            <div className='alert alert-success' role="alert">{alertMessage}</div>
+            : null}
+
+            {alertStatus === 2 ? 
+                <div className='alert alert-danger' role="alert">{alertMessage}</div>
+            : null}
+
                 <form onSubmit={handleSubmit}>
                         {isClicked ? 
                         <textarea ref={refTitle} required={true} name='title' className='form-control my-3' placeholder='Project Name'></textarea>
@@ -46,11 +87,13 @@ export const ProjectComponent = (props) => {
                         {isClicked ? 
                         <button onClick={() => {
                         setIsClicked(false)
+                        setAlertStatus(0)
                         }}type='submit' className='btn btn-secondary my-2 mx-1'>Cancel</button>
                         : null }
                         {!isClicked ? 
                         <button onClick={() => {
                         setIsClicked(true)
+                        setAlertStatus(0)
                         }} type='submit' className='btn btn-success my-2 mx-1'>Create New Project</button>
                         : null }
                     </div>
