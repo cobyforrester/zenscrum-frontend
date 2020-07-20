@@ -5,30 +5,43 @@ import { loadProjects, actionMemberPost } from '../lookup';
 // All code blow for creating new project
 export const ProjectComponent = (props) => {
     const {className} = props
+    const [newProjects, setNewProjects] = useState([])
     const handleSubmit = (event) => {
         event.preventDefault()
-        console.log(event)
+        const title = refTitle.current.value
+        const description = refDescription.current.value
+
+        let tempNewProjects = [...newProjects]
+        //change this to a server side call
+        tempNewProjects.unshift({ //newwest on top
+            title: title,
+            description: description,
+            id: 3333,
+            begin_date: Date.now(),
+            user: {username: 'cobyforrester'}
+        })
+        setNewProjects(tempNewProjects)
+        refTitle.current.value = ''
+        refDescription.current.value = ''
     }
 
     const [isClicked, setIsClicked] = useState(false)
     
-    //const refTitle = useRef();
-
+    const refTitle = useRef();
+    const refDescription = useRef();
 
     return <div className={className}>
             <div className='create-project-form col-md-4 mx-auto col-10 my-3'>   
                 <form onSubmit={handleSubmit}>
                         {isClicked ? 
-                        <textarea name='title' className='form-control my-3' placeholder='Project Name'></textarea>
+                        <textarea ref={refTitle} required={true} name='title' className='form-control my-3' placeholder='Project Name'></textarea>
                         : null }
                         {isClicked ? 
-                        <textarea name='description' className='form-control' placeholder='Description'></textarea>
+                        <textarea ref={refDescription} required={true} name='description' className='form-control' placeholder='Description'></textarea>
                         : null }
                     <div className='btn btn-group'>
                         {isClicked ? 
-                        <button onClick={() => {
-                        setIsClicked(false)
-                        }} type='submit' className='btn btn-warning my-2 mx-1'>Submit</button>
+                        <button type='submit' className='btn btn-warning my-2 mx-1'>Submit</button>
                         : null }
                         {isClicked ? 
                         <button onClick={() => {
@@ -43,17 +56,26 @@ export const ProjectComponent = (props) => {
                     </div>
                 </form>
             </div>
-            <ProjectsList />
+            <ProjectsList newProjects={newProjects} />
         </div>
     }
 
 // All Below for box view
 export const ProjectsList = (props) => {
+const [projectsInit, setProjectsInit] = useState([])
 const [projects, setProjects] = useState([])
+
+useEffect(() => { //if property changes combine initial projects with what is added
+    const final = [...props.newProjects].concat(projectsInit)
+    if (final.length !== projects.length) {
+        setProjects(final)
+    }
+}, [projectsInit, projects, props.newProjects])
+
 useEffect(() => {
     loadProjects().then(response => {
     if(response.status === 200){
-        setProjects(response.data);
+        setProjectsInit(response.data);
     }
     }).catch(error => {
     console.log(error)
@@ -84,125 +106,35 @@ return <div className='col-10 mx-auto col-md-6'>
 
 export const ActionMemberBtns = (props) => {
     const {project} = props
-    let addBtn= {
-        className: 'btn btn-success btn-sm mx-1',
-        description: 'Add Username',
-        type: 'add',
-    }
-    let rmvBtn= {
-        className: 'btn btn-danger btn-sm mx-1',
-        description: 'Remove User',
-        type: 'remove',
-    }
-    let edtBtn= {
-        className: 'btn btn-info btn-sm mx-1',
-        description: 'Add/Remove Members',
-        type: 'edit',
-    }
-    let cnclBtn= {
-        className: 'btn btn-light btn-sm mx-1',
-        description: 'Cancel',
-        type: 'cancel',
-    }
-    let initialMemberChange = { //for state changes
-        clicked: false,
-        change: ' d-none',
-        neutral: '',
-        alertClass: 'd-none',
-        alertMessage: '',
-    }
-    const [memberChange, setMemberChange] = useState(initialMemberChange) //dealing edit btn + add/remove
+    const [isClicked, setIsClicked] = useState(false)
+    const [alertMessage, setAlertMessage] = useState('')
+    const [alertStatus, setAlertStatus] = useState(0) // 0 is nothing, 1 is success, 2 is failure
     const refMemberForm = useRef();
-    const clickedFunc = (success, message) => { //This deals with if edit clicked or member added/removed
-        if (memberChange.clicked) {
-            let alertClass = ' d-none'
-            let alertMessage = ''
-            if (success === 'success') {
-                console.log('success')
-                alertClass = 'alert alert-success'
-                alertMessage = message
-            }
-            setMemberChange(prevState => {
-                return {
-                    ...prevState, 
-                    clicked:false, 
-                    change: ' d-none', 
-                    neutral: '',
-                    alertClass: alertClass, 
-                    alertMessage: alertMessage,
-                }
-            })
-        }
-        else {
-            setMemberChange(prevState => {
-                return {
-                    ...prevState, 
-                    clicked:true, 
-                    change: '', 
-                    neutral: ' d-none',
-                    alertClass: 'd-none', 
-                    alertMessage: '',
-                }
-            })
-        }
-    }
 
     const doAddRemove = (action) => {
         let member = refMemberForm.current.value
-        console.log(member)
         if (member === '') {
-            setMemberChange(prevState => {
-                return {
-                    ...prevState, 
-                    alertClass: 'alert alert-danger', 
-                    alertMessage: 'Format Error: No username typed',
-                }
-            });
+            setAlertMessage('Error: No username typed')
+            setAlertStatus(2)
         }
         else {
             actionMemberPost(project.id, action, member)
             .then(response => {
+                let alertMessage = 'Success!'
                 if(response.status === 200 || response.status === 201){
-                    let alertMessage = ''
                     if (action === 'add') {
-                        setMemberChange(prevState => {
-                            return {
-                                ...prevState, 
-                                clicked:false, 
-                                change: ' d-none', 
-                                neutral: '',
-                                alertClass: 'alert alert-success', 
-                                alertMessage: member + ' was Added',
-                            }
-                        });
-                        alertMessage = member + ' was Added'
+
+                        alertMessage = 'Success! User ' + member + ' was added to project'
                         refMemberForm.current.value = ''
                     } else {
-                        setMemberChange(prevState => {
-                            return {
-                                ...prevState, 
-                                clicked:false, 
-                                change: ' d-none', 
-                                neutral: '',
-                                alertClass: 'alert alert-success', 
-                                alertMessage: member + ' Removed',
-                            }
-                        });
-                        alertMessage = member + ' was Removed'
+                        alertMessage = 'Success! User ' + member + ' was removed from project'
                     }
-                    clickedFunc('success', alertMessage);
-                }else {
-                    setMemberChange(prevState => {
-                        return {
-                            ...prevState, 
-                            alertClass: 'alert alert-danger', 
-                            alertMessage: 'Submit Error: ' + response.message,
-                        }
-                        });
+                    setAlertMessage(alertMessage)
+                    setAlertStatus(1)
+                    refMemberForm.current.value = ''
                 }
             })
             .catch(error => {
-                console.log(error.response.status)
                 let errorMessage = ''
                 if (error.response.data.message === undefined) {
                     if (error.response.status === 403) {
@@ -213,40 +145,54 @@ export const ActionMemberBtns = (props) => {
                 }else {
                     errorMessage = 'Database Error: ' + error.response.data.message
                 }
-                setMemberChange(prevState => {
-                    return {
-                        ...prevState, 
-                        alertClass: 'alert alert-danger', 
-                        alertMessage: errorMessage,
-                    }
-                    });
+                setAlertMessage(errorMessage)
+                setAlertStatus(2)
             });
         }
     }
     return <>
-        <div className={memberChange.alertClass} role="alert">
-        {memberChange.alertMessage}
-        </div>
-        <form className={memberChange.change} >
-            <textarea className='member-form' ref={refMemberForm}  placeholder="Enter Username"></textarea>
+        {alertStatus === 1 ? 
+            <div className='alert alert-success' role="alert">{alertMessage}</div>
+        : null}
+
+        {alertStatus === 2 ? 
+            <div className='alert alert-danger' role="alert">{alertMessage}</div>
+        : null}
+
+        <form>
+        {isClicked ? 
+            <textarea required={true} className='member-form' ref={refMemberForm}  placeholder="Enter Username"></textarea>
+        : null}
         </form>
+
         <div className='btn btn-group'>
-            <button onClick={() => {
-                doAddRemove('add');
-            }} className={addBtn.className + memberChange.change} >{addBtn.description}</button>
+            {isClicked ? 
+                <button onClick={() => {
+                    doAddRemove('add');
+                }} className='btn btn-success btn-sm mx-1'>Add Username</button>
+            : null}
 
-            <button onClick={() => {
-                doAddRemove('remove');
-            }} className={rmvBtn.className + memberChange.change} >{rmvBtn.description}</button>
+            {isClicked ?
+                <button onClick={() => {
+                    doAddRemove('remove');
+                }} className='btn btn-danger btn-sm mx-1'>Remove User</button>
+            : null}
 
-            <button onClick={() => {
-                clickedFunc();
-            }} className={edtBtn.className + memberChange.neutral} >{edtBtn.description}</button>
+            {!isClicked ? 
+                <button onClick={() => {
+                    setIsClicked(true)
+                    setAlertStatus(0)
+                }} className='btn btn-info btn-sm mx-1' >Add/Remove Members</button>
+            : null}
 
-            <button onClick={() => {
-                refMemberForm.current.value = ''
-                clickedFunc();
-            }} className={cnclBtn.className + memberChange.change} >{cnclBtn.description}</button>
+            {isClicked ? 
+                <button onClick={() => {
+                    refMemberForm.current.value = ''
+                    setIsClicked(false)
+                    setAlertStatus(0)
+                }} className='btn btn-light btn-sm mx-1' >Cancel</button>
+            : null}
+
         </div>
         </>
 }

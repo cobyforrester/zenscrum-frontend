@@ -42,5 +42,6 @@
 /* Custom */
 .member-form {
   height: 32px;
-  width: 55%;
+  width: 40%;
+  min-width: 100px;
 }
