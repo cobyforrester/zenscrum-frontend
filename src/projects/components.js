@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { loadProjects, actionMemberPost } from '../lookup';
+import { lookup } from '../lookup';
   
 
 // All code blow for creating new project
@@ -73,7 +73,7 @@ useEffect(() => { //if property changes combine initial projects with what is ad
 }, [projectsInit, projects, props.newProjects])
 
 useEffect(() => {
-    loadProjects().then(response => {
+    lookup('get', 'projects/', {}, {}).then(response => {
     if(response.status === 200){
         setProjectsInit(response.data);
     }
@@ -118,7 +118,7 @@ export const ActionMemberBtns = (props) => {
             setAlertStatus(2)
         }
         else {
-            actionMemberPost(project.id, action, member)
+            lookup('post', 'projects/action/', {id:project.id, action: action, member: member}, {})
             .then(response => {
                 let alertMessage = 'Success!'
                 if(response.status === 200 || response.status === 201){
@@ -201,7 +201,7 @@ export const ActionMemberBtns = (props) => {
 export const ProjectsListAsTable = (props) => {
     const [projects, setProjects] = useState([])
     useEffect(() => {
-        loadProjects().then(response => {
+        lookup('get', 'projects/', {}, {}).then(response => {
         if(response.status === 200){
             setProjects(response.data);
         }
