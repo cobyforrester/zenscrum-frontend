@@ -43,8 +43,10 @@ export const ProjectComponent = (props) => {
                 alert.show(error.response.message, {type: 'error'})
             } else if (error.response && error.response.status === 403) {
                 alert.show('Database Error: You are not logged in', {type: 'error'})
-            } else {
+            } else if (error.response){
                 alert.show(error.response.message, {type: 'error'})
+            } else {
+                alert.show('Oops! Something went wrong.', {type: 'error'})
             }
             });
     }
@@ -53,6 +55,40 @@ export const ProjectComponent = (props) => {
 
     return <div className={className}>
             <div className='create-project-form col-md-4 mx-auto col-10 my-3'> 
+
+            <button onClick={()=> {
+
+
+                let headers =  {
+                        'Content-Type': 'application/json',
+                    }
+                
+                let data = {
+                    username: 'johndoe',
+                    password: '123456',
+                    email: 'coby@gmail.com'
+                }
+
+                lookup('post', 'auth/login/', data, headers).then(response => {
+                    //alert.show(response)
+                    let token = response.data.token
+                    headers.Authorization = `Token ${token}`
+                    lookup('get', 'auth/user/', {}, headers).then(response => {
+                        //alert.show(response)
+                        console.log(response)
+    
+                        
+                        }).catch(error => {
+                        console.log(error)
+                            alert.show('Something went wrong!', {type: 'error'})
+                        });
+
+                    }).catch(error => {
+                    console.log(error)
+                        alert.show('Something went wrong!', {type: 'error'})
+                    });
+            }}className='btn btn-danger btn-lg'>TEST</button>
+
                 <form onSubmit={handleSubmit}>
                         {isClicked ? 
                         <textarea ref={refTitle} required={true} name='title' className='form-control my-3' placeholder='Project Name'></textarea>
@@ -169,7 +205,6 @@ export const ActionMemberBtns = (props) => {
         }
     }
     return <>
-
         <form>
         {isClicked ? 
             <textarea required={true} className='member-form' ref={refMemberForm}  placeholder="Enter Username"></textarea>
