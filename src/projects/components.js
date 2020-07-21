@@ -64,16 +64,17 @@ export const ProjectComponent = (props) => {
                     }
                 
                 let data = {
-                    username: 'johndoe',
-                    password: '123456',
-                    email: 'coby@gmail.com'
+                    username: 'shan',
+                    email: "shan@gmail.com",
+                    password: "123456",
                 }
 
                 lookup('post', 'auth/login/', data, headers).then(response => {
                     //alert.show(response)
                     let token = response.data.token
                     headers.Authorization = `Token ${token}`
-                    lookup('get', 'auth/user/', {}, headers).then(response => {
+                    data = {title: 'hello', description: 'yes'}
+                    lookup('post', 'projects/create/', {}, headers).then(response => {
                         //alert.show(response)
                         console.log(response)
     
