@@ -1,52 +1,52 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { lookup } from '../lookup';
-import { useAlert } from 'react-alert'
+import { useAlert } from 'react-alert';
   
 
 // All code blow for creating new project
 export const ProjectComponent = (props) => {
-    const {className} = props
-    const [newProjects, setNewProjects] = useState([])
+    const {className} = props;
+    const [newProjects, setNewProjects] = useState([]);
 
     const refTitle = useRef();
     const refDescription = useRef();
 
-    const [isClicked, setIsClicked] = useState(false)
+    const [isClicked, setIsClicked] = useState(false);
 
-    const alert = useAlert()
+    const alert = useAlert();
 
 
     const handleSubmit = (event) => {
-        event.preventDefault()
+        event.preventDefault();
         const data = {
             title: refTitle.current.value,
             description: refDescription.current.value
-        }
+        };
 
-        let tempNewProjects = [...newProjects]
+        let tempNewProjects = [...newProjects];
 
         lookup('post', 'projects/create/', data, {}).then(response => {
             let message = ''
             if(response.status === 201){
-                tempNewProjects.unshift(response.data)
-                setNewProjects(tempNewProjects)
-                refTitle.current.value = ''
-                refDescription.current.value = ''
-                setIsClicked(false)
-                message = 'Project ' + response.data.title + ' was successfully created!'
-                alert.show(message, {type: 'success'})
+                tempNewProjects.unshift(response.data);
+                setNewProjects(tempNewProjects);
+                refTitle.current.value = '';
+                refDescription.current.value = '';
+                setIsClicked(false);
+                message = 'Project ' + response.data.title + ' was successfully created!';
+                alert.show(message, {type: 'success'});
 
             }
             }).catch(error => {
-            console.log(error)
+            console.log(error);
             if (error.response && error.response.message) {
-                alert.show(error.response.message, {type: 'error'})
+                alert.show(error.response.message, {type: 'error'});
             } else if (error.response && error.response.status === 403) {
-                alert.show('Database Error: You are not logged in', {type: 'error'})
+                alert.show('Database Error: You are not logged in', {type: 'error'});
             } else if (error.response){
-                alert.show(error.response.message, {type: 'error'})
+                alert.show(error.response.message, {type: 'error'});
             } else {
-                alert.show('Oops! Something went wrong.', {type: 'error'})
+                alert.show('Oops! Something went wrong.', {type: 'error'});
             }
             });
     }
@@ -61,32 +61,32 @@ export const ProjectComponent = (props) => {
 
                 let headers =  {
                         'Content-Type': 'application/json',
-                    }
+                    };
                 
                 let data = {
                     username: 'shan',
                     email: "shan@gmail.com",
                     password: "123456",
-                }
+                };
 
                 lookup('post', 'auth/login/', data, headers).then(response => {
-                    //alert.show(response)
-                    let token = response.data.token
-                    headers.Authorization = `Token ${token}`
-                    data = {title: 'hello', description: 'yes'}
+                    //alert.show(response);
+                    let token = response.data.token;
+                    headers.Authorization = `Token ${token}`;
+                    data = {title: 'hello', description: 'yes'};
                     lookup('post', 'projects/create/', {}, headers).then(response => {
                         //alert.show(response)
-                        console.log(response)
+                        console.log(response);
     
                         
                         }).catch(error => {
-                        console.log(error)
-                            alert.show('Something went wrong!', {type: 'error'})
+                        console.log(error);
+                        alert.show('Something went wrong!', {type: 'error'});
                         });
 
                     }).catch(error => {
-                    console.log(error)
-                        alert.show('Something went wrong!', {type: 'error'})
+                    console.log(error);
+                        alert.show('Something went wrong!', {type: 'error'});
                     });
             }}className='btn btn-danger btn-lg'>TEST</button>
 
@@ -103,12 +103,12 @@ export const ProjectComponent = (props) => {
                         : null }
                         {isClicked ? 
                         <button onClick={() => {
-                        setIsClicked(false)
+                        setIsClicked(false);
                         }}type='submit' className='btn btn-secondary my-2 mx-1'>Cancel</button>
                         : null }
                         {!isClicked ? 
                         <button onClick={() => {
-                        setIsClicked(true)
+                        setIsClicked(true);
                         }} type='submit' className='btn btn-success my-2 mx-1'>Create New Project</button>
                         : null }
                     </div>
@@ -120,15 +120,15 @@ export const ProjectComponent = (props) => {
 
 // All Below for box view
 export const ProjectsList = (props) => {
-const [projectsInit, setProjectsInit] = useState([])
-const [projects, setProjects] = useState([])
-const alert = useAlert()
+const [projectsInit, setProjectsInit] = useState([]);
+const [projects, setProjects] = useState([]);
+const alert = useAlert();
 useEffect(() => { //if property changes combine initial projects with what is added
-    const final = [...props.newProjects].concat(projectsInit)
+    const final = [...props.newProjects].concat(projectsInit);
     if (final.length !== projects.length) {
-        setProjects(final)
+        setProjects(final);
     }
-}, [projectsInit, projects, props.newProjects])
+}, [projectsInit, projects, props.newProjects]);
 
 useEffect(() => {
     lookup('get', 'projects/', {}, {}).then(response => {
@@ -136,8 +136,8 @@ useEffect(() => {
         setProjectsInit(response.data);
     }
     }).catch(error => {
-    console.log(error)
-    alert.show('Database Error: Trouble loading projects', {type: 'error'})
+    console.log(error);
+    alert.show('Database Error: Trouble loading projects', {type: 'error'});
     });
 }, [alert]);
 return projects.map((item, index) => {
@@ -164,44 +164,44 @@ return <div className='col-10 mx-auto col-md-6'>
 }
 
 export const ActionMemberBtns = (props) => {
-    const {project} = props
-    const [isClicked, setIsClicked] = useState(false)
+    const {project} = props;
+    const [isClicked, setIsClicked] = useState(false);
     const refMemberForm = useRef();
-    const alert = useAlert()
+    const alert = useAlert();
 
     const doAddRemove = (action) => {
-        let member = refMemberForm.current.value
+        let member = refMemberForm.current.value;
         if (member === '') {
-            alert.show('Error: No username typed', {type: 'error'})
+            alert.show('Error: No username typed', {type: 'error'});
         }
         else {
             lookup('post', 'projects/action/', {id:project.id, action: action, member: member}, {})
             .then(response => {
-                let alertMessage = 'Success!'
+                let alertMessage = 'Success!';
                 if(response.status === 200 || response.status === 201){
                     if (action === 'add') {
 
-                        alertMessage = 'Success! User ' + member + ' was added to project'
-                        refMemberForm.current.value = ''
+                        alertMessage = 'Success! User ' + member + ' was added to project';
+                        refMemberForm.current.value = '';
                     } else {
-                        alertMessage = 'Success! User ' + member + ' was removed from project'
+                        alertMessage = 'Success! User ' + member + ' was removed from project';
                     }
-                    alert.show(alertMessage, {type: 'success'})
-                    refMemberForm.current.value = ''
+                    alert.show(alertMessage, {type: 'success'});
+                    refMemberForm.current.value = '';
                 }
             })
             .catch(error => {
-                let errorMessage = ''
+                let errorMessage = '';
                 if (error.response.data.message === undefined) {
                     if (error.response.status === 403) {
-                        errorMessage = 'Database Error: You are not logged in'
+                        errorMessage = 'Database Error: You are not logged in';
                     }else {
-                        errorMessage = error.message
+                        errorMessage = error.message;
                     }
                 }else {
-                    errorMessage = 'Database Error: ' + error.response.data.message
+                    errorMessage = 'Database Error: ' + error.response.data.message;
                 }
-                alert.show(errorMessage, {type: 'error'})
+                alert.show(errorMessage, {type: 'error'});
             });
         }
     }
@@ -227,31 +227,30 @@ export const ActionMemberBtns = (props) => {
 
             {!isClicked ? 
                 <button onClick={() => {
-                    setIsClicked(true)
+                    setIsClicked(true);
                 }} className='btn btn-info btn-sm mx-1' >Add/Remove Members</button>
             : null}
 
             {isClicked ? 
                 <button onClick={() => {
-                    refMemberForm.current.value = ''
-                    setIsClicked(false)
+                    refMemberForm.current.value = '';
+                    setIsClicked(false);
                 }} className='btn btn-light btn-sm mx-1' >Cancel</button>
             : null}
-
         </div>
         </>
 }
 // All below for table view
 
 export const ProjectsListAsTable = (props) => {
-    const [projects, setProjects] = useState([])
+    const [projects, setProjects] = useState([]);
     useEffect(() => {
         lookup('get', 'projects/', {}, {}).then(response => {
         if(response.status === 200){
             setProjects(response.data);
         }
         }).catch(error => {
-        console.log(error)
+        console.log(error);
         });
     }, []);
     return <div className='container'>

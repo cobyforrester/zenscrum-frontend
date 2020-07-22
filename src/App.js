@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 
-import {ProjectComponent} from './projects'
+import {ProjectComponent} from './projects';
 
 
 function App() {

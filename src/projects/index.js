@@ -1,4 +1,4 @@
-import { ProjectsList, ProjectsListAsTable, ProjectComponent } from './components'
+import { ProjectsList, ProjectsListAsTable, ProjectComponent } from './components';
 
 export {
     ProjectsList,
