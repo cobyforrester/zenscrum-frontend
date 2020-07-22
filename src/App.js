@@ -4,15 +4,17 @@ import './App.css';
 import {ProjectComponent} from './projects';
 
 
+
+
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-      </header>
-        <div>
-            <ProjectComponent />
-        </div>
-    </div>
+  <div className="App">
+    <header className="App-header">
+    </header>
+      <div>
+          <ProjectComponent />
+      </div>
+  </div>
   );
 }
 

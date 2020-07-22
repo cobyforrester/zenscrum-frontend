@@ -6,6 +6,10 @@ import * as serviceWorker from './serviceWorker';
 
 import { Provider as AlertProvider } from 'react-alert'
 import AlertTemplate from 'react-alert-template-basic'
+import { Provider as ReduxProvider } from 'react-redux';
+
+import store from './store';
+
 
 //alert options
 const alertOptions = {
@@ -17,9 +21,11 @@ const appEl = document.getElementById('root')
 if (appEl) {
   ReactDOM.render(
     <React.StrictMode>
-      <AlertProvider template={AlertTemplate} {...alertOptions}>
-        <App />
-      </AlertProvider>
+      <ReduxProvider store={store}>
+        <AlertProvider template={AlertTemplate} {...alertOptions}>
+          <App />
+        </AlertProvider>
+      </ReduxProvider>
     </React.StrictMode>,
     appEl
   );

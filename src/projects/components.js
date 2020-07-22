@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { lookup } from '../lookup';
 import { useAlert } from 'react-alert';
+import { useSelector, useDispatch } from 'react-redux';
+
+import{ login, logout } from '../actions'
   
 
 // All code blow for creating new project
@@ -14,6 +17,10 @@ export const ProjectComponent = (props) => {
     const [isClicked, setIsClicked] = useState(false);
 
     const alert = useAlert();
+
+    //testing 
+    const isLogged = useSelector(state => state.isLogged);
+    const dispatch = useDispatch();
 
 
     const handleSubmit = (event) => {
@@ -55,6 +62,15 @@ export const ProjectComponent = (props) => {
 
     return <div className={className}>
             <div className='create-project-form col-md-4 mx-auto col-10 my-3'> 
+            <div>
+                <button onClick={() => {
+                    dispatch(login());
+                }}className='btn btn-success'>LOGIN</button>
+                <button onClick={() => {
+                    dispatch(logout());
+                }}className='btn btn-danger'>LOGOUT</button>
+                <p>{isLogged.toString()}</p>
+            </div>
 
             <button onClick={()=> {
 
