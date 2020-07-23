@@ -1,67 +1,80 @@
-import React from 'react'
+import React, { useEffect, useState, useRef } from "react";
+import { Link, Redirect } from "react-router-dom";
+import { login } from "../actions";
+import { useAlert } from "react-alert";
+import { useSelector, useDispatch } from "react-redux";
+import "./accounts.css";
 
 export const Register = () => {
-    state = {
-        first_name: '',
-        last_name: '',
-        username: '',
-        email: '',
-        password: '',
-        password2: '',
+  let initialState = {
+    first_name: "",
+    last_name: "",
+    username: "",
+    email: "",
+    password: "",
+    password2: "",
+  };
+  const [state, setState] = useState(initialState);
+  const tmpAuthState = useSelector((state) => state.auth.isAuthenticated);
+
+  useEffect(() => {
+    if (tmpAuthState) {
+      return <Redirect to="/" />;
     }
-    return <div className="col-md-6 m-auto">
-    <div className="card card-body mt-5">
-      <h2 className="text-center">Register</h2>
-      <form onSubmit={this.onSubmit}>
-        <div className="form-group">
-          <label>Username</label>
-          <input
-            type="text"
-            className="form-control"
-            name="username"
-            onChange={this.onChange}
-            value={username}
-          />
-        </div>
-        <div className="form-group">
-          <label>Email</label>
-          <input
-            type="email"
-            className="form-control"
-            name="email"
-            onChange={this.onChange}
-            value={email}
-          />
-        </div>
-        <div className="form-group">
-          <label>Password</label>
-          <input
-            type="password"
-            className="form-control"
-            name="password"
-            onChange={this.onChange}
-            value={password}
-          />
-        </div>
-        <div className="form-group">
-          <label>Confirm Password</label>
-          <input
-            type="password"
-            className="form-control"
-            name="password2"
-            onChange={this.onChange}
-            value={password2}
-          />
-        </div>
-        <div className="form-group">
-          <button type="submit" className="btn btn-primary">
-            Register
+  }, [tmpAuthState]);
+
+  return (
+    <div className="auth-wrapper mt-5">
+      <div className="auth-inner">
+        <form>
+          <h3>Sign Up</h3>
+
+          <div className="form-group">
+            <label>First name</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="First name"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Last name</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Last name"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Email address</label>
+            <input
+              type="email"
+              className="form-control"
+              placeholder="Enter email"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              className="form-control"
+              placeholder="Enter password"
+            />
+          </div>
+
+          <button type="submit" className="btn btn-primary btn-block">
+            Sign Up
           </button>
-        </div>
-        <p>
-          Already have an account? <Link to="/login">Login</Link>
-        </p>
-      </form>
+          <p className="forgot-password text-right">
+            Already registered <a href="#">sign in?</a>
+          </p>
+        </form>
+      </div>
     </div>
-  </div>
-}
+  );
+};
+
+export default Register;
