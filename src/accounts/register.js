@@ -24,7 +24,7 @@ export const Register = () => {
   }, [tmpAuthState]);
 
   return (
-    <div className="auth-wrapper mt-5">
+    <div className="auth-wrapper">
       <div className="auth-inner">
         <form>
           <h3>Sign Up</h3>
