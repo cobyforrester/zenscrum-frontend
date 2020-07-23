@@ -1,11 +1,4 @@
-export const login = () => {
-    return {
-        type: 'LOGIN'
-    }
-}
-
-export const logout = () => {
-    return {
-        type: 'LOGOUT'
-    }
+import { login } from './auth';
+export {
+    login,
 }

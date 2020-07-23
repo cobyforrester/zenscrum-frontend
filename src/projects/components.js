@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { lookup } from '../lookup';
+import { login } from '../actions';
 import { useAlert } from 'react-alert';
 import { useSelector, useDispatch } from 'react-redux';
-
-import{ login, logout } from '../actions'
   
 
 // All code blow for creating new project
@@ -19,7 +18,7 @@ export const ProjectComponent = (props) => {
     const alert = useAlert();
 
     //testing 
-    const isLogged = useSelector(state => state.isLogged);
+    const authState = useSelector(state => state);
     const dispatch = useDispatch();
 
 
@@ -64,12 +63,12 @@ export const ProjectComponent = (props) => {
             <div className='create-project-form col-md-4 mx-auto col-10 my-3'> 
             <div>
                 <button onClick={() => {
-                    dispatch(login());
+                    login('shan', '123456', dispatch);
                 }}className='btn btn-success'>LOGIN</button>
                 <button onClick={() => {
-                    dispatch(logout());
+                    
                 }}className='btn btn-danger'>LOGOUT</button>
-                <p>{isLogged.toString()}</p>
+                <p>{}</p>
             </div>
 
             <button onClick={()=> {

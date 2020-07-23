@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import isLogged from './isLogged';
+import auth from './auth';
 export default combineReducers({
-    isLogged: isLogged,
+    auth: auth,
 });
