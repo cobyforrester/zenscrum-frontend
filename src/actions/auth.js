@@ -22,7 +22,7 @@ export const isAuthenticated = (dispatch, getState) => {
 };
 
 // LOGIN USER
-export const login = (username, password, dispatch) => {
+export const login = (username, password, dispatch, alert) => {
   // Headers
     let headers= {
       'Content-Type': 'application/json',
@@ -40,13 +40,18 @@ export const login = (username, password, dispatch) => {
       });
       console.log('SUCCESS')
       console.log(response.data)
+      alert.show(`Welcome Back, ${response.data.user.first_name}`, {type: 'success'});
     })
     .catch((error) => {
-      //dispatch((err.response.data, err.response.status));
-      console.log(error.response.data)
+        if (error && error.response && error.response.data && error.response.data.non_field_errors[0]) {
+            alert.show(error.response.data.non_field_errors[0], {type: 'error'});
+        } else {
+            alert.show('There was an error logging in!', {type: 'error'});
+        }
       dispatch({
         type: 'AUTH_ERROR',
       });
+
     });
 };
 
