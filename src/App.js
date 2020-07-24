@@ -1,19 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 
-import {
-  HashRouter as Router,
-  Route,
-  Switch,
-  Redirect,
-} from "react-router-dom";
+import { HashRouter as Router, Route, Switch } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 
 import { ProjectComponent } from "./projects";
 import { Register, Login } from "./accounts";
 import { Navbar } from "./base";
 
 function App() {
+  let state = useState((state) => state);
+  let dispatch = useDispatch();
+  //isAuthenticated(dispatch, useState);
   return (
     <Router>
       <div className="App">

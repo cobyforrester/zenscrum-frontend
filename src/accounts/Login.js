@@ -1,54 +1,67 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useRef } from "react";
 import { Link, Redirect } from "react-router-dom";
-//import { login } from "../actions";
-//import { useAlert } from "react-alert";
 import { useSelector, useDispatch } from "react-redux";
+import { login } from "../actions";
+import { useAlert } from "react-alert";
+import { isAuthenticated } from "../actions";
 import "./accounts.css";
 
 export const Login = () => {
-  let initialState = {
-    first_name: "",
-    last_name: "",
-    username: "",
-    email: "",
-    password: "",
-    password2: "",
-  };
-  const [state, setState] = useState(initialState);
   const tmpAuthState = useSelector((state) => state.auth.isAuthenticated);
-  const ref = useRef();
+  const authToken = useSelector((state) => state.auth.token);
+  const dispatch = useDispatch();
+  const alert = useAlert();
+  const refUsername = useRef();
+  const refPassword = useRef();
+  console.log(authToken);
 
-  useEffect(() => {
-    if (tmpAuthState) {
-      return <Redirect to="/" />;
-    }
-  }, [tmpAuthState]);
+  if (authToken) {
+    isAuthenticated(dispatch, authToken);
+  }
+  if (tmpAuthState) {
+    return <Redirect to="/" />;
+  }
+
+  const clickSubmit = () => {
+    login(
+      refUsername.current.value,
+      refPassword.current.value,
+      dispatch,
+      alert
+    );
+  };
 
   return (
     <div className="auth-wrapper">
       <div className="auth-inner">
         <form>
           <h3>Sign In</h3>
-
           <div className="form-group">
-            <label>Email address</label>
+            <label>Username</label>
             <input
-              type="email"
+              ref={refUsername}
+              type="username"
               className="form-control"
-              placeholder="Enter email"
+              placeholder="Enter username"
             />
           </div>
 
           <div className="form-group">
             <label>Password</label>
             <input
+              ref={refPassword}
               type="password"
               className="form-control"
               placeholder="Enter password"
             />
           </div>
 
-          <button type="submit" className="btn btn-primary btn-block">
+          <button
+            onClick={() => {
+              clickSubmit();
+            }}
+            className="btn btn-primary btn-block"
+          >
             Submit
           </button>
           <p className="forgot-password text-right">

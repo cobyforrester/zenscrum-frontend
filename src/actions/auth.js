@@ -1,22 +1,20 @@
-import axios from 'axios';
-import { lookup } from '../lookup';
-
+import axios from "axios";
+import { lookup } from "../lookup";
 
 // CHECK TOKEN & LOAD USER
-export const isAuthenticated = (dispatch, getState) => {
+export const isAuthenticated = (dispatch, token) => {
   // User Loading
-  axios
-    .get('/api/auth/user', tokenConfig(getState))
+  lookup("get", "auth/user/", {}, { Authorization: `Token ${token}` })
     .then((res) => {
       dispatch({
-        type: 'AUTH_SUCCESS',
+        type: "AUTH_SUCCESS",
         payload: res.data,
       });
     })
     .catch((err) => {
       //dispatch(err.response.data, err.response.status);
       dispatch({
-        type: 'AUTH_ERROR',
+        type: "AUTH_ERROR",
       });
     });
 };
@@ -24,34 +22,37 @@ export const isAuthenticated = (dispatch, getState) => {
 // LOGIN USER
 export const login = (username, password, dispatch, alert) => {
   // Headers
-    let headers= {
-      'Content-Type': 'application/json',
-    }
-
+  let headers = {
+    "Content-Type": "application/json",
+  };
 
   // Request Body
   const data = JSON.stringify({ username, password });
 
-  lookup('post', 'auth/login/', data, headers)
+  lookup("post", "auth/login/", data, headers)
     .then((response) => {
       dispatch({
-        type: 'LOGIN_SUCCESS',
+        type: "LOGIN_SUCCESS",
         payload: response.data,
       });
-      console.log('SUCCESS')
-      console.log(response.data)
-      alert.show(`Welcome Back, ${response.data.user.first_name}`, {type: 'success'});
+      alert.show(`Welcome Back, ${response.data.user.first_name}`, {
+        type: "success",
+      });
     })
     .catch((error) => {
-        if (error && error.response && error.response.data && error.response.data.non_field_errors[0]) {
-            alert.show(error.response.data.non_field_errors[0], {type: 'error'});
-        } else {
-            alert.show('There was an error logging in!', {type: 'error'});
-        }
+      if (
+        error &&
+        error.response &&
+        error.response.data &&
+        error.response.data.non_field_errors[0]
+      ) {
+        alert.show(error.response.data.non_field_errors[0], { type: "error" });
+      } else {
+        alert.show("There was an error logging in!", { type: "error" });
+      }
       dispatch({
-        type: 'AUTH_ERROR',
+        type: "AUTH_ERROR",
       });
-
     });
 };
 
@@ -60,7 +61,7 @@ export const register = ({ username, password, email }) => (dispatch) => {
   // Headers
   const config = {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   };
 
@@ -68,17 +69,17 @@ export const register = ({ username, password, email }) => (dispatch) => {
   const body = JSON.stringify({ username, email, password });
 
   axios
-    .post('/api/auth/register', body, config)
+    .post("/api/auth/register", body, config)
     .then((res) => {
       dispatch({
-        type: 'REGISTER_SUCCESS',
+        type: "REGISTER_SUCCESS",
         payload: res.data,
       });
     })
     .catch((err) => {
       dispatch((err.response.data, err.response.status));
       dispatch({
-        type: 'REGISTER_FAIL',
+        type: "REGISTER_FAIL",
       });
     });
 };
@@ -86,11 +87,11 @@ export const register = ({ username, password, email }) => (dispatch) => {
 // LOGOUT USER
 export const logout = () => (dispatch, getState) => {
   axios
-    .post('/api/auth/logout/', null, tokenConfig(getState))
+    .post("/api/auth/logout/", null, tokenConfig(getState))
     .then((res) => {
-      dispatch({ type: 'CLEAR_LEADS' });
+      dispatch({ type: "CLEAR_LEADS" });
       dispatch({
-        type: 'LOGOUT_SUCCESS',
+        type: "LOGOUT_SUCCESS",
       });
     })
     .catch((err) => {
@@ -99,20 +100,17 @@ export const logout = () => (dispatch, getState) => {
 };
 
 // Setup config with token - helper function
-export const tokenConfig = (getState) => {
-  // Get token from state
-  const token = getState().auth.token;
-
+export const tokenConfig = (token) => {
   // Headers
   const config = {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   };
 
   // If token, add to headers config
   if (token) {
-    config.headers['Authorization'] = `Token ${token}`;
+    config.headers["Authorization"] = `Token ${token}`;
   }
 
   return config;
