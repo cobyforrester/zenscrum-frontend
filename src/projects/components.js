@@ -111,7 +111,7 @@ export const ProjectComponent = (props) => {
           </div>
         </form>
       </div>
-      <h1>All Your Projects</h1>
+      <h1 className="mb-5">All My Projects</h1>
       <ProjectsList newProjects={newProjects} />
     </div>
   );
@@ -153,17 +153,37 @@ export const Project = (props) => {
   const { project } = props;
 
   return (
-    <div className="col-10 mx-auto col-md-6">
-      <div className="card border mb-4 mt-4">
-        <div className="card-body">
-          <h2 className="card-title">{project.title}</h2>
-          <h5 className="card-title">Started: {project.begin_date}</h5>
-          <h5 className="card-title">Project Owner {project.user.username}</h5>
-          <p className="card-text">{project.description}</p>
-          <ActionMemberBtns project={project} />
+    <>
+      <section className="fdb-block border">
+        <div>
+          <div className="row">
+            <div className="col-12 text-center">
+              <h2 className="mt-2">{project.title}</h2>
+              <p>
+                <em>Started: {project.begin_date}</em>
+              </p>
+              <p>
+                <em>
+                  Owner:
+                  {` ${project.user.first_name} ${project.user.last_name}`}
+                </em>
+              </p>
+            </div>
+          </div>
+          <div className="row pt-2 pt-lg-5 text-left ml-5">
+            <div className="col-12 col-md-8 col-lg-7">
+              <h4>Description</h4>
+              <p className="lead">{project.description}</p>
+            </div>
+          </div>
+          <div className="row justify-content-start mb-2 ml-4">
+            <div className="col-md-auto">
+              <ActionMemberBtns project={project} />
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </>
   );
 };
 
@@ -178,12 +198,8 @@ export const ActionMemberBtns = (props) => {
     if (member === "") {
       alert.show("Error: No username typed", { type: "error" });
     } else {
-      lookup(
-        "post",
-        "projects/action/",
-        { id: project.id, action: action, member: member },
-        {}
-      )
+      let data = { id: project.id, action: action, member: member };
+      lookup("post", "projects/action/", data, {})
         .then((response) => {
           let alertMessage = "Success!";
           if (response.status === 200 || response.status === 201) {
@@ -202,7 +218,10 @@ export const ActionMemberBtns = (props) => {
         .catch((error) => {
           let errorMessage = "";
           if (error.response.data.message === undefined) {
-            if (error.response.status === 403) {
+            if (
+              error.response.status === 403 ||
+              error.response.status === 401
+            ) {
               errorMessage = "Database Error: You are not logged in";
             } else {
               errorMessage = error.message;
@@ -216,7 +235,7 @@ export const ActionMemberBtns = (props) => {
   };
   return (
     <>
-      <form>
+      <form className="m-1 text-center">
         {isClicked ? (
           <textarea
             required={true}
@@ -226,14 +245,13 @@ export const ActionMemberBtns = (props) => {
           ></textarea>
         ) : null}
       </form>
-
-      <div className="btn btn-group">
+      <div className="btn">
         {isClicked ? (
           <button
             onClick={() => {
               doAddRemove("add");
             }}
-            className="btn btn-success btn-sm mx-1"
+            className="btn btn-success mx-1 m-1"
           >
             Add Username
           </button>
@@ -244,10 +262,14 @@ export const ActionMemberBtns = (props) => {
             onClick={() => {
               doAddRemove("remove");
             }}
-            className="btn btn-danger btn-sm mx-1"
+            className="btn btn-danger mx-1 m-1"
           >
             Remove User
           </button>
+        ) : null}
+
+        {!isClicked ? (
+          <button className="btn btn-primary mx-1">Sprints</button>
         ) : null}
 
         {!isClicked ? (
@@ -255,7 +277,7 @@ export const ActionMemberBtns = (props) => {
             onClick={() => {
               setIsClicked(true);
             }}
-            className="btn btn-info btn-sm mx-1"
+            className="btn btn-info mx-1"
           >
             Add/Remove Members
           </button>
@@ -267,7 +289,7 @@ export const ActionMemberBtns = (props) => {
               refMemberForm.current.value = "";
               setIsClicked(false);
             }}
-            className="btn btn-light btn-sm mx-1"
+            className="btn btn-light mx-1 m-1"
           >
             Cancel
           </button>
