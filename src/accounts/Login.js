@@ -7,7 +7,6 @@ import "./accounts.css";
 
 export const Login = () => {
   const tmpAuthState = useSelector((state) => state.auth.isAuthenticated);
-  const authToken = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
   const alert = useAlert();
   const refUsername = useRef();
@@ -29,12 +28,13 @@ export const Login = () => {
   return (
     <div className="auth-wrapper">
       <div className="auth-inner">
-        <form>
+        <form onSubmit={clickSubmit}>
           <h3>Sign In</h3>
           <div className="form-group">
             <label>Username</label>
             <input
               ref={refUsername}
+              required={true}
               type="username"
               className="form-control"
               placeholder="Enter username"
@@ -45,18 +45,14 @@ export const Login = () => {
             <label>Password</label>
             <input
               ref={refPassword}
+              required={true}
               type="password"
               className="form-control"
               placeholder="Enter password"
             />
           </div>
 
-          <button
-            onClick={() => {
-              clickSubmit();
-            }}
-            className="btn btn-primary btn-block"
-          >
+          <button type="submit" className="btn btn-primary btn-block">
             Submit
           </button>
           <p className="forgot-password text-right">

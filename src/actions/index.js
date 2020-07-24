@@ -1,2 +1,2 @@
-import { login, logout, isAuthenticated } from "./auth";
-export { login, logout, isAuthenticated };
+import { login, logout, register, isAuthenticated } from "./auth";
+export { login, logout, register, isAuthenticated };

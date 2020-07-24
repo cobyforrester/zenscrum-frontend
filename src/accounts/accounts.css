@@ -40,7 +40,7 @@
   padding: 40px 55px 45px 55px;
   border-radius: 15px;
   transition: all 0.3s;
-  margin-top: 6%;
+  margin-top: 3%;
 }
 
 .auth-wrapper .form-control:focus {
