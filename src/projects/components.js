@@ -5,8 +5,7 @@ import { useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 
 // All code blow for creating new project
-export const ProjectComponent = (props) => {
-  const { className } = props;
+export const ProjectComponent = () => {
   const [newProjects, setNewProjects] = useState([]);
   const refTitle = useRef();
   const refDescription = useRef();
@@ -59,7 +58,7 @@ export const ProjectComponent = (props) => {
   };
 
   return (
-    <div className={className}>
+    <div className="projects-page">
       <div className="create-project-form col-md-4 mx-auto col-10 my-3">
         <form onSubmit={handleSubmit}>
           {isClicked ? (
@@ -154,7 +153,7 @@ export const Project = (props) => {
 
   return (
     <>
-      <section className="fdb-block border">
+      <section className="project-block border">
         <div>
           <div className="row">
             <div className="col-12 text-center">

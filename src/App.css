@@ -1,5 +1,10 @@
 .App {
   text-align: center;
+  /*
+  background-color: #15202b;
+  color: white;
+  border: #167bff;
+  */
 }
 
 /*
@@ -20,4 +25,10 @@
   height: 32px;
   width: 60%;
   min-width: 130px;
+}
+
+.project-block {
+}
+
+.projects-page {
 }
