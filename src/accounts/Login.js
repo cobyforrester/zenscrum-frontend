@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link, Redirect } from "react-router-dom";
-import { login } from "../actions";
-import { useAlert } from "react-alert";
+//import { login } from "../actions";
+//import { useAlert } from "react-alert";
 import { useSelector, useDispatch } from "react-redux";
 import "./accounts.css";
 
@@ -16,6 +16,7 @@ export const Login = () => {
   };
   const [state, setState] = useState(initialState);
   const tmpAuthState = useSelector((state) => state.auth.isAuthenticated);
+  const ref = useRef();
 
   useEffect(() => {
     if (tmpAuthState) {
@@ -51,7 +52,7 @@ export const Login = () => {
             Submit
           </button>
           <p className="forgot-password text-right">
-            Forgot <a href="#">password?</a>
+            No account? <Link to="/register">Sign-up here</Link>
           </p>
         </form>
       </div>

@@ -69,7 +69,7 @@ export const Register = () => {
             Sign Up
           </button>
           <p className="forgot-password text-right">
-            Already registered <a href="#">sign in?</a>
+            Already registered? <Link to="/login">Sign-in here</Link>
           </p>
         </form>
       </div>

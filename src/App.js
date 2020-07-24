@@ -11,12 +11,14 @@ import {
 
 import { ProjectComponent } from "./projects";
 import { Register, Login } from "./accounts";
+import { Navbar } from "./base";
 
 function App() {
   return (
     <Router>
       <div className="App">
         <div>
+          <Navbar />
           <Switch>
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
