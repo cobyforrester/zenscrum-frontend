@@ -71,3 +71,9 @@
 .forgot-password a {
   color: #167bff;
 }
+
+/*=======================  btns =========================*/
+
+.logout-btn {
+  border-width: 2px !important;
+}

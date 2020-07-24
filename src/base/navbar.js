@@ -1,11 +1,16 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { useAlert } from "react-alert";
 import { logout } from "../actions";
+
 export const MyNavbar = () => {
   const authState = useSelector((state) => state.auth.isAuthenticated);
-  const authToken = useSelector((state) => state.auth.isAuthenticated);
+  const authToken = useSelector((state) => state.auth.token);
+  const authUser = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
+  const alert = useAlert();
+
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -14,7 +19,6 @@ export const MyNavbar = () => {
         </Link>
 
         <div className="ml-auto" id="navbarText">
-          <ul className="navbar-nav mr-auto"></ul>
           <span className="navbar-text">
             {!authState ? (
               <Link className="nav-item" to="/login">
@@ -29,11 +33,12 @@ export const MyNavbar = () => {
             {authState ? (
               <button
                 onClick={() => {
-                  logout(dispatch, authToken); //why the fuck is it not working
+                  logout(dispatch, authToken, alert);
                 }}
-                className="nav-item mr-5"
+                type="button"
+                className="logout-btn btn btn-outline-danger btn-rounded font-weight-bold"
               >
-                Logout
+                Logout {authUser.username}
               </button>
             ) : null}
           </span>

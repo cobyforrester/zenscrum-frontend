@@ -111,6 +111,7 @@ export const ProjectComponent = (props) => {
           </div>
         </form>
       </div>
+      <h1>All Your Projects</h1>
       <ProjectsList newProjects={newProjects} />
     </div>
   );

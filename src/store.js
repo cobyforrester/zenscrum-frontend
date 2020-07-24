@@ -14,6 +14,7 @@ let auth = {
 
 if (old_time) {
   if (new_time - old_time < 36000000) {
+    //checks to see if token has expired or not
     auth = {
       token: localStorage.getItem("token"),
       date: localStorage.getItem("date"),

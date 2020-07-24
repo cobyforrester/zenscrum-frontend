@@ -92,9 +92,12 @@ export const register = (user, dispatch, alert) => {
           type: "REGISTER_SUCCESS",
           payload: res.data,
         });
+        alert.show(`Welcome to Scrummy ${user.first_name}!`, {
+          type: "success",
+        });
       })
       .catch((err) => {
-        console.log(err.response.data, err.response.data.email[0]);
+        //console.log(err.response.data, err.response.data.email[0]);
         if (err && err.response && err.response.data) {
           if (err.response.data.email && err.response.data.email[0])
             alert.show(err.response.data.email[0], {
@@ -106,7 +109,7 @@ export const register = (user, dispatch, alert) => {
 };
 
 // LOGOUT USER
-export const logout = (dispatch, token) => {
+export const logout = (dispatch, token, alert) => {
   let headers = {
     "Content-Type": "application/json",
     Authorization: `Token ${token}`,
@@ -116,11 +119,13 @@ export const logout = (dispatch, token) => {
       dispatch({
         type: "LOGOUT_SUCCESS",
       });
+      alert.show("Come back sometime :)", { type: "success" });
     })
     .catch((err) => {
-      console.log(err.response.data, err.response.status);
+      console.log(err);
       dispatch({
         type: "LOGOUT_SUCCESS",
       });
+      alert.show("Come back sometime :)", { type: "success" });
     });
 };
