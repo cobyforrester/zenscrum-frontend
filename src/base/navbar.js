@@ -1,4 +1,4 @@
-import React, { useDebugValue } from "react";
+import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { logout } from "../actions";
@@ -29,9 +29,7 @@ export const MyNavbar = () => {
             {authState ? (
               <button
                 onClick={() => {
-                  console.log("first");
                   logout(dispatch, authToken); //why the fuck is it not working
-                  console.log("second");
                 }}
                 className="nav-item mr-5"
               >

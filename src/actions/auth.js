@@ -86,8 +86,11 @@ export const register = ({ username, password, email }) => (dispatch) => {
 
 // LOGOUT USER
 export const logout = (dispatch, token) => {
-  let headers = { Authorization: `Token ${token}` };
-  lookup("post", "auth/login/", {}, headers)
+  let headers = {
+    "Content-Type": "application/json",
+    Authorization: `Token ${token}`,
+  };
+  lookup("post", "auth/logout/", null, headers)
     .then((res) => {
       dispatch({
         type: "LOGOUT_SUCCESS",
@@ -95,6 +98,9 @@ export const logout = (dispatch, token) => {
     })
     .catch((err) => {
       console.log(err.response.data, err.response.status);
+      dispatch({
+        type: "LOGOUT_SUCCESS",
+      });
     });
 };
 

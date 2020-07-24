@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { lookup } from "../lookup";
 import { useAlert } from "react-alert";
-import { useSelector, useDispatch } from "react-redux";
-import { Link, Redirect } from "react-router-dom";
-import { isAuthenticated } from "../actions";
+import { useSelector } from "react-redux";
+import { Redirect } from "react-router-dom";
 
 // All code blow for creating new project
 export const ProjectComponent = (props) => {
@@ -15,11 +14,8 @@ export const ProjectComponent = (props) => {
   const alert = useAlert();
   const authToken = useSelector((state) => state.auth.token);
   const authState = useSelector((state) => state.auth.isAuthenticated);
-  const dispatch = useDispatch();
   if (!authState) {
     return <Redirect to="/login" />;
-  } else {
-    isAuthenticated(dispatch, authToken);
   }
 
   const handleSubmit = (event) => {

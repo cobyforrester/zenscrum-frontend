@@ -3,7 +3,6 @@ import { Link, Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { login } from "../actions";
 import { useAlert } from "react-alert";
-import { isAuthenticated } from "../actions";
 import "./accounts.css";
 
 export const Login = () => {
@@ -14,9 +13,6 @@ export const Login = () => {
   const refUsername = useRef();
   const refPassword = useRef();
 
-  if (authToken) {
-    isAuthenticated(dispatch, authToken);
-  }
   if (tmpAuthState) {
     return <Redirect to="/" />;
   }
