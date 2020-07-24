@@ -1,8 +1,11 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useDebugValue } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { logout } from "../actions";
 export const MyNavbar = () => {
   const authState = useSelector((state) => state.auth.isAuthenticated);
+  const authToken = useSelector((state) => state.auth.isAuthenticated);
+  const dispatch = useDispatch();
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -24,9 +27,16 @@ export const MyNavbar = () => {
               </Link>
             ) : null}
             {authState ? (
-              <Link className="nav-item mr-5" to="/">
+              <button
+                onClick={() => {
+                  console.log("first");
+                  logout(dispatch, authToken); //why the fuck is it not working
+                  console.log("second");
+                }}
+                className="nav-item mr-5"
+              >
                 Logout
-              </Link>
+              </button>
             ) : null}
           </span>
         </div>

@@ -13,7 +13,6 @@ export const Login = () => {
   const alert = useAlert();
   const refUsername = useRef();
   const refPassword = useRef();
-  console.log(authToken);
 
   if (authToken) {
     isAuthenticated(dispatch, authToken);

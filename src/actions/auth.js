@@ -3,8 +3,8 @@ import { lookup } from "../lookup";
 
 // CHECK TOKEN & LOAD USER
 export const isAuthenticated = (dispatch, token) => {
-  // User Loading
-  lookup("get", "auth/user/", {}, { Authorization: `Token ${token}` })
+  let headers = { Authorization: `Token ${token}` };
+  lookup("get", "auth/user/", {}, headers)
     .then((res) => {
       dispatch({
         type: "AUTH_SUCCESS",
@@ -85,17 +85,16 @@ export const register = ({ username, password, email }) => (dispatch) => {
 };
 
 // LOGOUT USER
-export const logout = () => (dispatch, getState) => {
-  axios
-    .post("/api/auth/logout/", null, tokenConfig(getState))
+export const logout = (dispatch, token) => {
+  let headers = { Authorization: `Token ${token}` };
+  lookup("post", "auth/login/", {}, headers)
     .then((res) => {
-      dispatch({ type: "CLEAR_LEADS" });
       dispatch({
         type: "LOGOUT_SUCCESS",
       });
     })
     .catch((err) => {
-      dispatch((err.response.data, err.response.status));
+      console.log(err.response.data, err.response.status);
     });
 };
 
