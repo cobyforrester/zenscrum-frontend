@@ -247,7 +247,30 @@ export const ActionMemberBtns = (props) => {
   const [isClicked, setIsClicked] = useState(false);
   const refMemberForm = useRef();
   const alert = useAlert();
-  const authToken = useSelector((state) => state.auth.token);
+  const auth = useSelector((state) => state.auth);
+
+  const doDelete = () => {
+    let headers = { Authorization: `Token ${auth.token}` };
+    console.log(project.id);
+    lookup("post", `projects/${project.id}/delete/`, {}, headers)
+      .then((response) => {
+        setIsDeleted(true);
+        alert.show("Project successfully deleted!", { type: "success" });
+      })
+      .catch((error) => {
+        let errorMessage = "";
+        if (error.response.data.message === undefined) {
+          if (error.response.status === 403 || error.response.status === 401) {
+            errorMessage = "Database Error: You are not logged in";
+          } else {
+            errorMessage = error.message;
+          }
+        } else {
+          errorMessage = "Database Error: " + error.response.data.message;
+        }
+        alert.show(errorMessage, { type: "error" });
+      });
+  };
 
   const doAddRemove = (action) => {
     let member = refMemberForm.current.value;
@@ -255,7 +278,7 @@ export const ActionMemberBtns = (props) => {
       alert.show("Error: No username typed", { type: "error" });
     } else {
       let data = { id: project.id, action: action, member: member };
-      let headers = { Authorization: `Token ${authToken}` };
+      let headers = { Authorization: `Token ${auth.token}` };
       lookup("post", "projects/action/", data, headers)
         .then((response) => {
           setMembersList(response.data.members.name);
@@ -339,14 +362,26 @@ export const ActionMemberBtns = (props) => {
       {!isClicked ? (
         <div className="btn">
           <button className="brk-btn mx-1">Sprints</button>
-          <button
-            onClick={() => {
-              setIsClicked(true);
-            }}
-            className="brk-btn mx-1"
-          >
-            Edit Members
-          </button>
+          {project.user.username === auth.user.username ? (
+            <>
+              <button
+                onClick={() => {
+                  setIsClicked(true);
+                }}
+                className="brk-btn mx-1"
+              >
+                Edit Members
+              </button>
+              <button
+                onClick={() => {
+                  doDelete();
+                }}
+                className="brk-btn mx-1"
+              >
+                Delete
+              </button>
+            </>
+          ) : null}
         </div>
       ) : null}
     </>
