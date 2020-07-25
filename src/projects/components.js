@@ -68,53 +68,53 @@ export const ProjectComponent = () => {
         <div className="create-project-form col-12 mb-3 text-center">
           <form className="project-create-form" onSubmit={handleSubmit}>
             {isClicked ? (
-              <input
-                ref={refTitle}
-                required={true}
-                name="title"
-                className="project-input form-control my-3"
-                placeholder="Project Name"
-              ></input>
+              <>
+                <input
+                  ref={refTitle}
+                  required={true}
+                  name="title"
+                  className="project-input form-control my-3"
+                  placeholder="Project Name"
+                ></input>
+                <textarea
+                  ref={refDescription}
+                  required={true}
+                  name="description"
+                  className="project-input form-control"
+                  placeholder="Description"
+                ></textarea>
+
+                <div className="btn">
+                  <button
+                    type="submit"
+                    className="helper-btn btn btn-info my-2 mx-1"
+                  >
+                    Submit
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsClicked(false);
+                    }}
+                    className="btn btn-secondary my-2 mx-1"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
             ) : null}
-            {isClicked ? (
-              <textarea
-                ref={refDescription}
-                required={true}
-                name="description"
-                className="project-input form-control"
-                placeholder="Description"
-              ></textarea>
-            ) : null}
+
             <div className="btn">
-              {isClicked ? (
-                <button
-                  type="submit"
-                  className="helper-btn btn btn-info my-2 mx-1"
-                >
-                  Submit
-                </button>
-              ) : null}
-              {isClicked ? (
-                <button
-                  onClick={() => {
-                    setIsClicked(false);
-                  }}
-                  type="submit"
-                  className="btn btn-secondary my-2 mx-1"
-                >
-                  Cancel
-                </button>
-              ) : null}
               {!isClicked ? (
-                <button
-                  onClick={() => {
-                    setIsClicked(true);
-                  }}
-                  type="submit"
-                  className="brk-btn my-2 mx-1"
-                >
-                  New Project
-                </button>
+                <>
+                  <button
+                    onClick={() => {
+                      setIsClicked(true);
+                    }}
+                    className="brk-btn my-2 mx-1"
+                  >
+                    New Project
+                  </button>
+                </>
               ) : null}
             </div>
           </form>
@@ -242,6 +242,7 @@ export const ActionMemberBtns = (props) => {
             alert.show(alertMessage, { type: "success" });
             refMemberForm.current.value = "";
           }
+          setIsClicked(false);
         })
         .catch((error) => {
           let errorMessage = "";
@@ -263,42 +264,50 @@ export const ActionMemberBtns = (props) => {
   };
   return (
     <>
-      <form className="m-1 text-center">
-        {isClicked ? (
-          <input
-            required={true}
-            className="project-input member-form"
-            ref={refMemberForm}
-            placeholder="Enter Username"
-          ></input>
-        ) : null}
-      </form>
-      <div className="btn">
-        {isClicked ? (
-          <button
-            onClick={() => {
-              doAddRemove("add");
-            }}
-            className="helper-btn btn btn-info mx-1"
-          >
-            Add User
-          </button>
-        ) : null}
+      {isClicked ? (
+        <>
+          <form className="m-1 text-center">
+            <input
+              required={true}
+              className="project-input member-form"
+              ref={refMemberForm}
+              placeholder="Enter Username"
+            ></input>
+          </form>
+          <div className="btn">
+            <button
+              onClick={() => {
+                doAddRemove("add");
+              }}
+              className="helper-btn btn btn-info mx-1"
+            >
+              Add User
+            </button>
 
-        {isClicked ? (
-          <button
-            onClick={() => {
-              doAddRemove("remove");
-            }}
-            className="helper-btn btn btn-info mx-1"
-          >
-            Remove User
-          </button>
-        ) : null}
+            <button
+              onClick={() => {
+                doAddRemove("remove");
+              }}
+              className="helper-btn btn btn-info mx-1"
+            >
+              Remove User
+            </button>
+            <button
+              onClick={() => {
+                refMemberForm.current.value = "";
+                setIsClicked(false);
+              }}
+              className="btn btn-secondary mx-1"
+            >
+              Cancel
+            </button>
+          </div>
+        </>
+      ) : null}
 
-        {!isClicked ? <button className="brk-btn mx-1">Sprints</button> : null}
-
-        {!isClicked ? (
+      {!isClicked ? (
+        <div className="btn">
+          <button className="brk-btn mx-1">Sprints</button>
           <button
             onClick={() => {
               setIsClicked(true);
@@ -307,20 +316,8 @@ export const ActionMemberBtns = (props) => {
           >
             Edit Members
           </button>
-        ) : null}
-
-        {isClicked ? (
-          <button
-            onClick={() => {
-              refMemberForm.current.value = "";
-              setIsClicked(false);
-            }}
-            className="btn btn-secondary mx-1"
-          >
-            Cancel
-          </button>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
     </>
   );
 };
