@@ -1,7 +1,3 @@
-import { ProjectsList, ProjectsListAsTable, ProjectComponent } from './components';
+import { ProjectsList, ProjectComponent } from "./components";
 
-export {
-    ProjectsList,
-    ProjectsListAsTable,
-    ProjectComponent,
-}
+export { ProjectsList, ProjectComponent };

@@ -59,58 +59,64 @@ export const ProjectComponent = () => {
 
   return (
     <div className="projects-page">
-      <div className="create-project-form col-md-4 mx-auto col-10 my-3">
-        <form onSubmit={handleSubmit}>
-          {isClicked ? (
-            <textarea
-              ref={refTitle}
-              required={true}
-              name="title"
-              className="form-control my-3"
-              placeholder="Project Name"
-            ></textarea>
-          ) : null}
-          {isClicked ? (
-            <textarea
-              ref={refDescription}
-              required={true}
-              name="description"
-              className="form-control"
-              placeholder="Description"
-            ></textarea>
-          ) : null}
-          <div className="btn btn-group">
-            {isClicked ? (
-              <button type="submit" className="btn btn-warning my-2 mx-1">
-                Submit
-              </button>
-            ) : null}
-            {isClicked ? (
-              <button
-                onClick={() => {
-                  setIsClicked(false);
-                }}
-                type="submit"
-                className="btn btn-secondary my-2 mx-1"
-              >
-                Cancel
-              </button>
-            ) : null}
-            {!isClicked ? (
-              <button
-                onClick={() => {
-                  setIsClicked(true);
-                }}
-                type="submit"
-                className="btn btn-success my-2 mx-1"
-              >
-                Create New Project
-              </button>
-            ) : null}
-          </div>
-        </form>
+      <div className="row justify-content-md-center">
+        <div className="col-12 my-3 mx-auto text-center">
+          <h1 className="all-projects-header">All Your Projects</h1>
+        </div>
       </div>
-      <h1 className="mb-5">All My Projects</h1>
+      <div className="row justify-content-md-center">
+        <div className="create-project-form col-12 mb-3 text-center">
+          <form onSubmit={handleSubmit}>
+            {isClicked ? (
+              <textarea
+                ref={refTitle}
+                required={true}
+                name="title"
+                className="form-control my-3"
+                placeholder="Project Name"
+              ></textarea>
+            ) : null}
+            {isClicked ? (
+              <textarea
+                ref={refDescription}
+                required={true}
+                name="description"
+                className="form-control"
+                placeholder="Description"
+              ></textarea>
+            ) : null}
+            <div className="btn">
+              {isClicked ? (
+                <button type="submit" className="btn btn-warning my-2 mx-1">
+                  Submit
+                </button>
+              ) : null}
+              {isClicked ? (
+                <button
+                  onClick={() => {
+                    setIsClicked(false);
+                  }}
+                  type="submit"
+                  className="btn btn-secondary my-2 mx-1"
+                >
+                  Cancel
+                </button>
+              ) : null}
+              {!isClicked ? (
+                <button
+                  onClick={() => {
+                    setIsClicked(true);
+                  }}
+                  type="submit"
+                  className="btn btn-success my-2 mx-1"
+                >
+                  Create New Project
+                </button>
+              ) : null}
+            </div>
+          </form>
+        </div>
+      </div>
       <ProjectsList newProjects={newProjects} />
     </div>
   );
@@ -121,6 +127,7 @@ export const ProjectsList = (props) => {
   const [projectsInit, setProjectsInit] = useState([]);
   const [projects, setProjects] = useState([]);
   const alert = useAlert();
+  const authToken = useSelector((state) => state.auth.token);
   useEffect(() => {
     //if property changes combine initial projects with what is added
     const final = [...props.newProjects].concat(projectsInit);
@@ -130,7 +137,8 @@ export const ProjectsList = (props) => {
   }, [projectsInit, projects, props.newProjects]);
 
   useEffect(() => {
-    lookup("get", "projects/", {}, {})
+    let headers = { Authorization: `Token ${authToken}` };
+    lookup("get", "projects/", {}, headers)
       .then((response) => {
         if (response.status === 200) {
           setProjectsInit(response.data);
@@ -142,7 +150,7 @@ export const ProjectsList = (props) => {
           type: "error",
         });
       });
-  }, [alert]);
+  }, [alert, authToken]);
   return projects.map((item, index) => {
     return <Project project={item} key={`${index}-item.id`} />;
   });
@@ -153,10 +161,10 @@ export const Project = (props) => {
 
   return (
     <>
-      <section className="project-block border">
+      <section className="project-block border-top border-bottom">
         <div>
-          <div className="row">
-            <div className="col-12 text-center">
+          <div className="row ml-5 mr-2">
+            <div className="col-12">
               <h2 className="mt-2">{project.title}</h2>
               <p>
                 <em>Started: {project.begin_date}</em>
@@ -167,15 +175,23 @@ export const Project = (props) => {
                   {` ${project.user.first_name} ${project.user.last_name}`}
                 </em>
               </p>
+              {project.members.name !== "" ? (
+                <p>
+                  <em>
+                    Members:
+                    {` ${project.members.name}`}
+                  </em>
+                </p>
+              ) : null}
             </div>
           </div>
-          <div className="row pt-2 pt-lg-5 text-left ml-5">
+          <div className="row pt-2 pt-lg-5 ml-5">
             <div className="col-12 col-md-8 col-lg-7">
               <h4>Description</h4>
               <p className="lead">{project.description}</p>
             </div>
           </div>
-          <div className="row justify-content-start mb-2 ml-4">
+          <div className="row justify-content-start mb-4 ml-4">
             <div className="col-md-auto">
               <ActionMemberBtns project={project} />
             </div>
@@ -191,6 +207,7 @@ export const ActionMemberBtns = (props) => {
   const [isClicked, setIsClicked] = useState(false);
   const refMemberForm = useRef();
   const alert = useAlert();
+  const authToken = useSelector((state) => state.auth.token);
 
   const doAddRemove = (action) => {
     let member = refMemberForm.current.value;
@@ -198,7 +215,8 @@ export const ActionMemberBtns = (props) => {
       alert.show("Error: No username typed", { type: "error" });
     } else {
       let data = { id: project.id, action: action, member: member };
-      lookup("post", "projects/action/", data, {})
+      let headers = { Authorization: `Token ${authToken}` };
+      lookup("post", "projects/action/", data, headers)
         .then((response) => {
           let alertMessage = "Success!";
           if (response.status === 200 || response.status === 201) {
@@ -250,7 +268,7 @@ export const ActionMemberBtns = (props) => {
             onClick={() => {
               doAddRemove("add");
             }}
-            className="btn btn-success mx-1 m-1"
+            className="btn btn-success mx-1"
           >
             Add Username
           </button>
@@ -261,7 +279,7 @@ export const ActionMemberBtns = (props) => {
             onClick={() => {
               doAddRemove("remove");
             }}
-            className="btn btn-danger mx-1 m-1"
+            className="btn btn-danger mx-1"
           >
             Remove User
           </button>
@@ -281,6 +299,7 @@ export const ActionMemberBtns = (props) => {
             Add/Remove Members
           </button>
         ) : null}
+        <button className="brk-btn">EDIT MEMBERS</button>
 
         {isClicked ? (
           <button
@@ -288,52 +307,12 @@ export const ActionMemberBtns = (props) => {
               refMemberForm.current.value = "";
               setIsClicked(false);
             }}
-            className="btn btn-light mx-1 m-1"
+            className="btn btn-light mx-1"
           >
             Cancel
           </button>
         ) : null}
       </div>
     </>
-  );
-};
-// All below for table view
-
-export const ProjectsListAsTable = (props) => {
-  const [projects, setProjects] = useState([]);
-  useEffect(() => {
-    lookup("get", "projects/", {}, {})
-      .then((response) => {
-        if (response.status === 200) {
-          setProjects(response.data);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
-  return (
-    <div className="container">
-      <table className="table table-striped table-hover">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Title</th>
-            <th scope="col">Owner</th>
-            <th scope="col">Members</th>
-          </tr>
-        </thead>
-        <tbody>
-          {projects.map((item, index) => (
-            <tr>
-              <th scope="row">{index + 1}</th>
-              <td>{item.title}</td>
-              <td>{item.user.username}</td>
-              <td>{item.begin_date}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
   );
 };
