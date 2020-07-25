@@ -19,6 +19,7 @@ export const ProjectComponent = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+
     const data = {
       title: refTitle.current.value,
       description: refDescription.current.value,
@@ -31,25 +32,43 @@ export const ProjectComponent = () => {
       .then((response) => {
         let message = "";
         if (response.status === 201) {
-          tempNewProjects.unshift(response.data);
-          setNewProjects(tempNewProjects);
+          tempNewProjects.unshift(response.data); //adds new project to total list
+          setNewProjects(tempNewProjects); //sets new projects to updated list
           refTitle.current.value = "";
           refDescription.current.value = "";
           setIsClicked(false);
           message =
-            "Project " + response.data.title + " was successfully created!";
+            'Project "' + response.data.title + '" was successfully created!';
           alert.show(message, { type: "success" });
         }
       })
       .catch((error) => {
-        console.log(error);
-        if (error.response && error.response.message) {
-          alert.show(error.response.message, { type: "error" });
-        } else if (error.response && error.response.status === 403) {
-          alert.show("Database Error: You are not logged in", {
+        console.log(error.response);
+        if (
+          error &&
+          error.response &&
+          error.response &&
+          error.response.data.description
+        ) {
+          alert.show(error.response.data.description[0], {
+            type: "error",
+          });
+        } else if (
+          error &&
+          error.response &&
+          error.response &&
+          error.response.data.title
+        ) {
+          alert.show(error.response.data.title[0], {
             type: "error",
           });
         } else if (error.response && error.response.message) {
+          alert.show(error && error.response.message, { type: "error" });
+        } else if (error && error.response && error.response.status === 403) {
+          alert.show("Database Error: You are not logged in", {
+            type: "error",
+          });
+        } else if (error && error.response && error.response.message) {
           alert.show(error.response.message, { type: "error" });
         } else {
           alert.show("Oops! Something went wrong.", { type: "error" });
@@ -161,60 +180,70 @@ export const ProjectsList = (props) => {
 
 export const Project = (props) => {
   const { project } = props;
+  const [isDeleted, setIsDeleted] = useState(false);
+  const [membersList, setMembersList] = useState(project.members.name);
 
   return (
     <>
-      <section className="border-top border-bottom">
-        <div>
-          <div className="row ml-5 mr-2">
-            <div className="col-12">
-              <h2 className="mt-2">{project.title}</h2>
-              <div>
-                <em>
+      {!isDeleted ? (
+        <>
+          <section className="border-top border-bottom">
+            <div>
+              <div className="row ml-5 mr-2">
+                <div className="col-12">
+                  <h2 className="mt-2">{project.title}</h2>
                   <div>
-                    <span className="site-color">Started: </span>
-                    {project.begin_date}
+                    <em>
+                      <div>
+                        <span className="site-color">Started: </span>
+                        {project.begin_date}
+                      </div>
+                      <div>
+                        <span className="site-color">Owner:</span>
+                        {` ${project.user.first_name} ${project.user.last_name}`}
+                      </div>
+                      <div>
+                        {membersList !== "" ? (
+                          <span>
+                            <span className="site-color">Members:</span>
+                            {` ${membersList}`}
+                          </span>
+                        ) : (
+                          <span>
+                            <span className="site-color">Members: </span>Add
+                            some members!
+                          </span>
+                        )}
+                      </div>
+                    </em>
                   </div>
-                  <div>
-                    <span className="site-color">Owner:</span>
-                    {` ${project.user.first_name} ${project.user.last_name}`}
-                  </div>
-                  <div>
-                    {project.members.name !== "" ? (
-                      <span>
-                        <span className="site-color">Members:</span>
-                        {` ${project.members.name}`}
-                      </span>
-                    ) : (
-                      <span>
-                        <span className="site-color">Members: </span>Add some
-                        members!
-                      </span>
-                    )}
-                  </div>
-                </em>
+                </div>
+              </div>
+              <div className="row pt-2 pt-lg-5 ml-5">
+                <div className="col-12 col-md-8 col-lg-7">
+                  <h5>About</h5>
+                  <p className="lead">{project.description}</p>
+                </div>
+              </div>
+              <div className="row justify-content-start mb-4 ml-4">
+                <div className="col-md-auto">
+                  <ActionMemberBtns
+                    project={project}
+                    setIsDeleted={setIsDeleted}
+                    setMembersList={setMembersList}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-          <div className="row pt-2 pt-lg-5 ml-5">
-            <div className="col-12 col-md-8 col-lg-7">
-              <h5>About</h5>
-              <p className="lead">{project.description}</p>
-            </div>
-          </div>
-          <div className="row justify-content-start mb-4 ml-4">
-            <div className="col-md-auto">
-              <ActionMemberBtns project={project} />
-            </div>
-          </div>
-        </div>
-      </section>
+          </section>
+        </>
+      ) : null}
     </>
   );
 };
 
 export const ActionMemberBtns = (props) => {
-  const { project } = props;
+  const { project, setIsDeleted, setMembersList } = props;
   const [isClicked, setIsClicked] = useState(false);
   const refMemberForm = useRef();
   const alert = useAlert();
@@ -229,19 +258,21 @@ export const ActionMemberBtns = (props) => {
       let headers = { Authorization: `Token ${authToken}` };
       lookup("post", "projects/action/", data, headers)
         .then((response) => {
+          setMembersList(response.data.members.name);
           let alertMessage = "Success!";
-          if (response.status === 200 || response.status === 201) {
-            if (action === "add") {
-              alertMessage =
-                "Success! User " + member + " was added to project";
-              refMemberForm.current.value = "";
-            } else {
-              alertMessage =
-                "Success! User " + member + " was removed from project";
-            }
-            alert.show(alertMessage, { type: "success" });
+          if (response.data.message) {
+            alertMessage = response.data.message;
             refMemberForm.current.value = "";
+          } else if (action === "add") {
+            alertMessage = "Success! User " + member + " was added to project";
+            refMemberForm.current.value = "";
+          } else {
+            alertMessage =
+              "Success! User " + member + " was removed from project";
           }
+          alert.show(alertMessage, { type: "success" });
+          refMemberForm.current.value = "";
+
           setIsClicked(false);
         })
         .catch((error) => {

@@ -10,4 +10,11 @@
     background-color: #343a40;
     font-weight: bold;
   }
+  &:active {
+    outline: none !important;
+    border: 0.2em solid #07a6d6 !important;
+    box-shadow: 0 0 0 2px #07a6d6 !important;
+    -webkit-box-shadow: 0 0 0 2px #07a6d6 !important;
+    -moz-box-shadow: 0 0 2px 5px #07a6d6 !important;
+  }
 }
