@@ -166,7 +166,7 @@ export const Project = (props) => {
           <div className="row ml-5 mr-2">
             <div className="col-12">
               <h2 className="mt-2">{project.title}</h2>
-              <p>
+              <div>
                 <em>
                   <div>
                     <span className="site-color">Started: </span>
@@ -190,7 +190,7 @@ export const Project = (props) => {
                     )}
                   </div>
                 </em>
-              </p>
+              </div>
             </div>
           </div>
           <div className="row pt-2 pt-lg-5 ml-5">

@@ -75,12 +75,35 @@ export const register = (user, dispatch, alert) => {
     !user.email ||
     !user.password
   ) {
-    alert.show("Error no field can be empty", { type: "error" });
+    alert.show("Error no field can be empty!", { type: "error" });
+  } else if (
+    user.first_name.length < 3 ||
+    user.last_name.length < 3 ||
+    user.username.length < 3 ||
+    user.email.length < 3 ||
+    user.password.length < 3
+  ) {
+    alert.show("No field can be less than 3 charcters!", { type: "error" });
+  } else if (
+    !user.first_name.match(/^[0-9A-Za-z]+$/) ||
+    !user.last_name.match(/^[0-9A-Za-z]+$/) ||
+    !user.username.match(/^[0-9A-Za-z]+$/) ||
+    !user.password.match(/^[0-9A-Za-z]+$/)
+  ) {
+    alert.show("Field can only contain letters and numbers!", {
+      type: "error",
+    });
   } else {
+    //capitalize first and last name
+    const first_name =
+      user.first_name.charAt(0).toUpperCase() + user.first_name.slice(1);
+    const last_name =
+      user.last_name.charAt(0).toUpperCase() + user.last_name.slice(1);
+
     // Request Body
     const data = {
-      first_name: user.first_name,
-      last_name: user.last_name,
+      first_name: first_name,
+      last_name: last_name,
       username: user.username,
       email: user.email,
       password: user.password,
@@ -92,17 +115,33 @@ export const register = (user, dispatch, alert) => {
           type: "REGISTER_SUCCESS",
           payload: res.data,
         });
-        alert.show(`Welcome to Scrummy ${user.first_name}!`, {
+        alert.show(`Welcome to Scrummy ${first_name}!`, {
           type: "success",
         });
       })
       .catch((err) => {
         //console.log(err.response.data, err.response.data.email[0]);
         if (err && err.response && err.response.data) {
-          if (err.response.data.email && err.response.data.email[0])
+          if (err.response.data.email && err.response.data.email[0]) {
             alert.show(err.response.data.email[0], {
               type: "error",
             });
+          } else if (
+            err.response.data.username &&
+            err.response.data.username[0]
+          ) {
+            alert.show(err.response.data.username[0], {
+              type: "error",
+            });
+          } else {
+            alert.show("Looks lika an something went wrong!", {
+              type: "error",
+            });
+          }
+        } else {
+          alert.show("Looks lika an something went wrong!", {
+            type: "error",
+          });
         }
       });
   }

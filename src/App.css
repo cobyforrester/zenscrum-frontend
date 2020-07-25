@@ -36,3 +36,7 @@
 .site-color {
   color: #07a6d6;
 }
+
+.no-bullet-list {
+  list-style-type: none;
+}
