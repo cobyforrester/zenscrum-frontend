@@ -73,9 +73,24 @@
   border-width: 2px !important;
   color: #07a6d6 !important;
   border-color: #07a6d6 !important;
+  border-radius: 0 !important;
 }
 
 .logout-btn:hover {
-  background-color: #07a6d6;
+  background-color: #07a6d6 !important;
   color: white !important;
+  border-color: #07a6d6 !important;
+  border-radius: 0 !important;
+}
+
+.logout-btn:active,
+.logout-btn:focus {
+  background-color: #07a6d6 !important;
+  color: white !important;
+  border-color: #07a6d6 !important;
+  border-radius: 100 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px white !important;
+  -webkit-box-shadow: 0 0 0 2px white !important;
+  -moz-box-shadow: 0 0 0 2px white !important;
 }

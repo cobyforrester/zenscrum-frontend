@@ -58,7 +58,7 @@ export const ProjectComponent = () => {
   };
 
   return (
-    <div className="projects-page">
+    <div>
       <div className="row justify-content-md-center">
         <div className="col-12 my-3 mx-auto text-center">
           <h1 className="all-projects-header">All Your Projects</h1>
@@ -66,28 +66,31 @@ export const ProjectComponent = () => {
       </div>
       <div className="row justify-content-md-center">
         <div className="create-project-form col-12 mb-3 text-center">
-          <form onSubmit={handleSubmit}>
+          <form className="project-create-form" onSubmit={handleSubmit}>
             {isClicked ? (
-              <textarea
+              <input
                 ref={refTitle}
                 required={true}
                 name="title"
-                className="form-control my-3"
+                className="project-input form-control my-3"
                 placeholder="Project Name"
-              ></textarea>
+              ></input>
             ) : null}
             {isClicked ? (
               <textarea
                 ref={refDescription}
                 required={true}
                 name="description"
-                className="form-control"
+                className="project-input form-control"
                 placeholder="Description"
               ></textarea>
             ) : null}
             <div className="btn">
               {isClicked ? (
-                <button type="submit" className="btn btn-warning my-2 mx-1">
+                <button
+                  type="submit"
+                  className="helper-btn btn btn-info my-2 mx-1"
+                >
                   Submit
                 </button>
               ) : null}
@@ -161,7 +164,7 @@ export const Project = (props) => {
 
   return (
     <>
-      <section className="project-block border-top border-bottom">
+      <section className="border-top border-bottom">
         <div>
           <div className="row ml-5 mr-2">
             <div className="col-12">
@@ -262,12 +265,12 @@ export const ActionMemberBtns = (props) => {
     <>
       <form className="m-1 text-center">
         {isClicked ? (
-          <textarea
+          <input
             required={true}
-            className="member-form"
+            className="project-input member-form"
             ref={refMemberForm}
             placeholder="Enter Username"
-          ></textarea>
+          ></input>
         ) : null}
       </form>
       <div className="btn">
@@ -276,9 +279,9 @@ export const ActionMemberBtns = (props) => {
             onClick={() => {
               doAddRemove("add");
             }}
-            className="btn btn-success mx-1"
+            className="helper-btn btn btn-info mx-1"
           >
-            Add Username
+            Add User
           </button>
         ) : null}
 
@@ -287,7 +290,7 @@ export const ActionMemberBtns = (props) => {
             onClick={() => {
               doAddRemove("remove");
             }}
-            className="btn btn-danger mx-1"
+            className="helper-btn btn btn-info mx-1"
           >
             Remove User
           </button>
@@ -312,7 +315,7 @@ export const ActionMemberBtns = (props) => {
               refMemberForm.current.value = "";
               setIsClicked(false);
             }}
-            className="btn btn-light mx-1"
+            className="btn btn-secondary mx-1"
           >
             Cancel
           </button>
