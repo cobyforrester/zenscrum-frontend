@@ -36,7 +36,7 @@ export const MyNavbar = () => {
                   logout(dispatch, authToken, alert);
                 }}
                 type="button"
-                className="logout-btn btn btn-outline-danger btn-rounded font-weight-bold"
+                className="logout-btn btn btn-outline-danger font-weight-bold"
               >
                 Logout {authUser.username}
               </button>

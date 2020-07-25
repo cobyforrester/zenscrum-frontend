@@ -1,9 +1,5 @@
-.App {
-  /*
-  background-color: #15202b;
-  color: white;
-  border: #167bff;
-  */
+.btn {
+  border-radius: 0 !important;
 }
 
 /*
@@ -35,4 +31,8 @@
 .all-projects-header {
   text-decoration: underline;
   text-decoration-color: #07a6d6;
+}
+
+.site-color {
+  color: #07a6d6;
 }

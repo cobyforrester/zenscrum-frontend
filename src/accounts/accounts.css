@@ -71,4 +71,11 @@
 
 .logout-btn {
   border-width: 2px !important;
+  color: #07a6d6 !important;
+  border-color: #07a6d6 !important;
+}
+
+.logout-btn:hover {
+  background-color: #07a6d6;
+  color: white !important;
 }

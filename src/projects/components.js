@@ -108,9 +108,9 @@ export const ProjectComponent = () => {
                     setIsClicked(true);
                   }}
                   type="submit"
-                  className="btn btn-success my-2 mx-1"
+                  className="brk-btn my-2 mx-1"
                 >
-                  Create New Project
+                  New Project
                 </button>
               ) : null}
             </div>
@@ -167,27 +167,35 @@ export const Project = (props) => {
             <div className="col-12">
               <h2 className="mt-2">{project.title}</h2>
               <p>
-                <em>Started: {project.begin_date}</em>
-              </p>
-              <p>
                 <em>
-                  Owner:
-                  {` ${project.user.first_name} ${project.user.last_name}`}
+                  <div>
+                    <span className="site-color">Started: </span>
+                    {project.begin_date}
+                  </div>
+                  <div>
+                    <span className="site-color">Owner:</span>
+                    {` ${project.user.first_name} ${project.user.last_name}`}
+                  </div>
+                  <div>
+                    {project.members.name !== "" ? (
+                      <span>
+                        Members:
+                        {` ${project.members.name}`}
+                      </span>
+                    ) : (
+                      <span>
+                        <span className="site-color">Members: </span>Add some
+                        members!
+                      </span>
+                    )}
+                  </div>
                 </em>
               </p>
-              {project.members.name !== "" ? (
-                <p>
-                  <em>
-                    Members:
-                    {` ${project.members.name}`}
-                  </em>
-                </p>
-              ) : null}
             </div>
           </div>
           <div className="row pt-2 pt-lg-5 ml-5">
             <div className="col-12 col-md-8 col-lg-7">
-              <h4>Description</h4>
+              <h5>About</h5>
               <p className="lead">{project.description}</p>
             </div>
           </div>
@@ -285,21 +293,18 @@ export const ActionMemberBtns = (props) => {
           </button>
         ) : null}
 
-        {!isClicked ? (
-          <button className="btn btn-primary mx-1">Sprints</button>
-        ) : null}
+        {!isClicked ? <button className="brk-btn mx-1">Sprints</button> : null}
 
         {!isClicked ? (
           <button
             onClick={() => {
               setIsClicked(true);
             }}
-            className="btn btn-info mx-1"
+            className="brk-btn mx-1"
           >
-            Add/Remove Members
+            Edit Members
           </button>
         ) : null}
-        <button className="brk-btn">EDIT MEMBERS</button>
 
         {isClicked ? (
           <button
