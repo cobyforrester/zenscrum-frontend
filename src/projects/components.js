@@ -179,7 +179,7 @@ export const Project = (props) => {
                   <div>
                     {project.members.name !== "" ? (
                       <span>
-                        Members:
+                        <span className="site-color">Members:</span>
                         {` ${project.members.name}`}
                       </span>
                     ) : (
