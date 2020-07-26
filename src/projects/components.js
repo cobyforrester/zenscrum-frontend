@@ -108,7 +108,12 @@ export const ProjectComponent = () => {
                   className="project-input form-control"
                   placeholder="Description"
                 ></textarea>
-
+                <p className="mt-2">
+                  <em>
+                    Tip: Try dragging the corner of the description box for more
+                    room!
+                  </em>
+                </p>
                 <div className="btn">
                   <button
                     type="submit"
@@ -149,8 +154,8 @@ export const ProjectComponent = () => {
         setNumOfProjects={setNumOfProjects}
         newProjects={newProjects}
       />
-      {numOfProjects === 0 ? (
-        <h3 className="mt-5 text-center">
+      {numOfProjects === 0 && !isClicked ? (
+        <h3 className="mt-3 text-center">
           No Projects? Click on "NEW PROJECT" above to create a new project!
         </h3>
       ) : null}
@@ -276,7 +281,6 @@ export const ActionMemberBtns = (props) => {
 
   const doDelete = () => {
     let headers = { Authorization: `Token ${auth.token}` };
-    console.log(project.id);
     lookup("post", `projects/${project.id}/delete/`, {}, headers)
       .then((response) => {
         setIsDeleted(true);
@@ -399,7 +403,9 @@ export const ActionMemberBtns = (props) => {
               </button>
               <button
                 onClick={() => {
-                  doDelete();
+                  window.confirm(
+                    "Are you sure you wish to delete this project?\n This cannot be undone."
+                  ) && doDelete();
                 }}
                 className="brk-btn mx-1"
               >

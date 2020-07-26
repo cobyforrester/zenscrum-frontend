@@ -52,7 +52,7 @@ export const Login = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary btn-block">
+          <button type="submit" className="btn btn-secondary btn-block">
             Submit
           </button>
           <p className="forgot-password text-right">

@@ -91,7 +91,7 @@ export const Register = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary btn-block">
+          <button type="submit" className="btn btn-secondary btn-block">
             Sign Up
           </button>
           <p className="forgot-password text-right">

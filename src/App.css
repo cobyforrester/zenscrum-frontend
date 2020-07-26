@@ -2,13 +2,11 @@
   padding: 10px;
 }
 
-.project-input:focus {
-}
-
 .project-create-form textarea,
 .project-create-form input {
   display: block !important;
   width: 50% !important;
+  max-width: 450px !important;
   margin-left: auto !important;
   margin-right: auto !important;
   text-align: left;
