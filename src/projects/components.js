@@ -7,6 +7,7 @@ import { Redirect } from "react-router-dom";
 // All code blow for creating new project
 export const ProjectComponent = () => {
   const [newProjects, setNewProjects] = useState([]);
+  const [numOfProjects, setNumOfProjects] = useState(null); //to count how many we have at any moment
   const refTitle = useRef();
   const refDescription = useRef();
   const [isClicked, setIsClicked] = useState(false);
@@ -30,6 +31,11 @@ export const ProjectComponent = () => {
 
     lookup("post", "projects/create/", data, headers)
       .then((response) => {
+        numOfProjects
+          ? setNumOfProjects((state) => state + 1)
+          : setNumOfProjects(1);
+
+        setNumOfProjects((state) => 1);
         let message = "";
         if (response.status === 201) {
           tempNewProjects.unshift(response.data); //adds new project to total list
@@ -139,13 +145,22 @@ export const ProjectComponent = () => {
           </form>
         </div>
       </div>
-      <ProjectsList newProjects={newProjects} />
+      <ProjectsList
+        setNumOfProjects={setNumOfProjects}
+        newProjects={newProjects}
+      />
+      {numOfProjects === 0 ? (
+        <h3 className="mt-5 text-center">
+          No Projects? Click on "NEW PROJECT" above to create a new project!
+        </h3>
+      ) : null}
     </div>
   );
 };
 
 // All Below for box view
 export const ProjectsList = (props) => {
+  const { setNumOfProjects } = props;
   const [projectsInit, setProjectsInit] = useState([]);
   const [projects, setProjects] = useState([]);
   const alert = useAlert();
@@ -162,9 +177,8 @@ export const ProjectsList = (props) => {
     let headers = { Authorization: `Token ${authToken}` };
     lookup("get", "projects/", {}, headers)
       .then((response) => {
-        if (response.status === 200) {
-          setProjectsInit(response.data);
-        }
+        setProjectsInit(response.data);
+        setNumOfProjects(response.data.length); //setting it so we know if we have no projects
       })
       .catch((error) => {
         console.log(error);
@@ -172,16 +186,27 @@ export const ProjectsList = (props) => {
           type: "error",
         });
       });
-  }, [alert, authToken]);
+  }, [alert, authToken, setNumOfProjects]);
+
   return projects.map((item, index) => {
-    return <Project project={item} key={`${index}-item.id`} />;
+    return (
+      <Project
+        setNumOfProjects={setNumOfProjects}
+        project={item}
+        key={`${index}-item.id`}
+      />
+    );
   });
 };
 
 export const Project = (props) => {
-  const { project } = props;
+  const { project, setNumOfProjects } = props;
   const [isDeleted, setIsDeleted] = useState(false);
   const [membersList, setMembersList] = useState(project.members.name);
+
+  useEffect(() => {
+    if (isDeleted) setNumOfProjects((state) => state - 1);
+  }, [isDeleted, setNumOfProjects]);
 
   return (
     <>
