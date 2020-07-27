@@ -19,6 +19,7 @@ function App() {
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/" component={ProjectComponent} />
+            <Route exact path="/sprints/:id" component={ProjectComponent} />
           </Switch>
         </div>
       </div>

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { lookup } from "../lookup";
 import { useAlert } from "react-alert";
 import { useSelector } from "react-redux";
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 
 // All code blow for creating new project
 export const ProjectComponent = () => {
@@ -213,6 +213,39 @@ export const Project = (props) => {
     if (isDeleted) setNumOfProjects((state) => state - 1);
   }, [isDeleted, setNumOfProjects]);
 
+  const formatDate = (date) => {
+    let year = date.slice(0, 4);
+    let month = date.slice(5, 7);
+    let day = date.slice(8);
+    let month_names = {
+      "01": "January",
+      "02": "February",
+      "03": "March",
+      "04": "April",
+      "05": "May",
+      "06": "June",
+      "07": "July",
+      "08": "August",
+      "09": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December",
+    };
+    if (day[0] === "0") {
+      day = day.split(1);
+    }
+    if (day === "1") {
+      day = day + "st";
+    } else if (day === "2") {
+      day = day + "nd";
+    } else if (day === "3") {
+      day = day + "rd";
+    } else {
+      day = day + "th";
+    }
+    return `${month_names[month]} ${day}, ${year}`;
+  };
+
   return (
     <>
       {!isDeleted ? (
@@ -225,8 +258,8 @@ export const Project = (props) => {
                   <div>
                     <em>
                       <div>
-                        <span className="site-color">Started: </span>
-                        {project.begin_date}
+                        <span className="site-color">Started (PST): </span>
+                        {formatDate(project.begin_date)}
                       </div>
                       <div>
                         <span className="site-color">Owner:</span>
@@ -390,7 +423,9 @@ export const ActionMemberBtns = (props) => {
 
       {!isClicked ? (
         <div className="btn">
-          <button className="brk-btn mx-1">Sprints</button>
+          <Link to={`/sprints/${project.id}`}>
+            <button className="brk-btn mx-1">Sprints</button>
+          </Link>
           {project.user.username === auth.user.username ? (
             <>
               <button
