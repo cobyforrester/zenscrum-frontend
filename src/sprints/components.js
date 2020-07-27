@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { Redirect, Link } from "react-router-dom";
 
 // All code blow for creating new project
-export const SprintComponent = () => {
+export const SprintComponent = ({ match }) => {
   const [newProjects, setNewProjects] = useState([]);
   const [numOfProjects, setNumOfProjects] = useState(null); //to count how many we have at any moment
   const refTitle = useRef();
@@ -14,6 +14,7 @@ export const SprintComponent = () => {
   const alert = useAlert();
   const authToken = useSelector((state) => state.auth.token);
   const authState = useSelector((state) => state.auth.isAuthenticated);
+
   if (!authState) {
     return <Redirect to="/login" />;
   }
@@ -86,8 +87,33 @@ export const SprintComponent = () => {
     <div>
       <div className="row justify-content-md-center">
         <div className="col-12 my-3 mx-auto text-center">
-          <h1 className="all-projects-header">All Your Projects</h1>
+          <h1 className="all-projects-header">Sprints For </h1>
         </div>
+        <button
+          onClick={() => {
+            let data = {
+              goal:
+                "This is the goal of the project! I hope this is long enough to pass the test but maybe it wont be",
+              project: match.params.id,
+              start_date: "2020-07-20",
+              end_date: "2020-06-20",
+            };
+            let headers = { Authorization: `Token ${authToken}` };
+            lookup("get", `sprints/${match.params.id}`, data, headers)
+              .then((response) => {
+                console.log(response.data);
+              })
+              .catch((error) => {
+                console.log(error);
+                alert.show("Database Error: Trouble loading projects", {
+                  type: "error",
+                });
+              });
+          }}
+          className="btn btn-primary"
+        >
+          Create
+        </button>
       </div>
       <div className="row justify-content-md-center">
         <div className="create-project-form col-12 mb-3 text-center">
