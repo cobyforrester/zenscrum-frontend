@@ -91,6 +91,7 @@ export const SprintComponent = ({ match }) => {
         </div>
         <button
           onClick={() => {
+            console.log("hello");
             let data = {
               goal:
                 "This is the goal of the project! I hope this is long enough to pass the test but maybe it wont be",

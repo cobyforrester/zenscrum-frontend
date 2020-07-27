@@ -3,6 +3,7 @@ import { Link, Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { login } from "../actions";
 import { useAlert } from "react-alert";
+import { sha256 } from "./sha256";
 import "./accounts.css";
 
 export const Login = () => {
@@ -19,7 +20,7 @@ export const Login = () => {
   const clickSubmit = () => {
     login(
       refUsername.current.value,
-      refPassword.current.value,
+      sha256(refPassword.current.value), //hashing password so it cannot be seen
       dispatch,
       alert
     );

@@ -4,6 +4,7 @@ import { register } from "../actions";
 import { useAlert } from "react-alert";
 import { useSelector, useDispatch } from "react-redux";
 import "./accounts.css";
+import { sha256 } from "./sha256";
 
 export const Register = () => {
   const tmpAuthState = useSelector((state) => state.auth.isAuthenticated);
@@ -25,7 +26,7 @@ export const Register = () => {
       first_name: refFN.current.value,
       last_name: refLN.current.value,
       email: refEmail.current.value,
-      password: refPassword.current.value,
+      password: sha256(refPassword.current.value),
     };
     register(user, dispatch, alert);
   };
