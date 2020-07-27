@@ -14,7 +14,7 @@ export const MyNavbar = () => {
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-        <Link className="navbar-brand" to="/login">
+        <Link className="navbar-brand" to="/">
           Scrummy
         </Link>
 
