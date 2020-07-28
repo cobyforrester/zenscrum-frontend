@@ -20,66 +20,57 @@ export const ProjectComponent = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    let title = refTitle.current.value;
+    let description = refDescription.current.value;
+    if (title.length < 3) {
+      alert.show("Title must be at least 3 characters long!", {
+        type: "error",
+      });
+    } else if (title.length > 50) {
+      alert.show("Title must be 50 characters or less!", {
+        type: "error",
+      });
+    } else if (description.length < 20) {
+      alert.show("Description must be at least 20 characters long!", {
+        type: "error",
+      });
+    } else if (description.length > 1000) {
+      alert.show("Description must be 1,000 characters or less!", {
+        type: "error",
+      });
+    } else {
+      const data = {
+        title: title,
+        description: refDescription.current.value,
+      };
+      let headers = { Authorization: `Token ${authToken}` };
 
-    const data = {
-      title: refTitle.current.value,
-      description: refDescription.current.value,
-    };
-    let headers = { Authorization: `Token ${authToken}` };
+      let tempNewProjects = [...newProjects];
 
-    let tempNewProjects = [...newProjects];
+      lookup("post", "projects/create/", data, headers)
+        .then((response) => {
+          numOfProjects
+            ? setNumOfProjects((state) => state + 1)
+            : setNumOfProjects(1); //sets num of projects state
 
-    lookup("post", "projects/create/", data, headers)
-      .then((response) => {
-        numOfProjects
-          ? setNumOfProjects((state) => state + 1)
-          : setNumOfProjects(1);
-
-        setNumOfProjects((state) => 1);
-        let message = "";
-        if (response.status === 201) {
+          //setNumOfProjects((state) => 1); //sets the total projects to 1
           tempNewProjects.unshift(response.data); //adds new project to total list
           setNewProjects(tempNewProjects); //sets new projects to updated list
           refTitle.current.value = "";
           refDescription.current.value = "";
           setIsClicked(false);
-          message =
-            'Project "' + response.data.title + '" was successfully created!';
-          alert.show(message, { type: "success" });
-        }
-      })
-      .catch((error) => {
-        console.log(error.response);
-        if (
-          error &&
-          error.response &&
-          error.response &&
-          error.response.data.description
-        ) {
-          alert.show(error.response.data.description[0], {
+          alert.show(
+            `Project "${response.data.title}" was successfully created!`,
+            { type: "success" }
+          );
+        })
+        .catch((error) => {
+          console.log(error.response);
+          alert.show("Oops! Something went wrong submitting!", {
             type: "error",
           });
-        } else if (
-          error &&
-          error.response &&
-          error.response &&
-          error.response.data.title
-        ) {
-          alert.show(error.response.data.title[0], {
-            type: "error",
-          });
-        } else if (error.response && error.response.message) {
-          alert.show(error && error.response.message, { type: "error" });
-        } else if (error && error.response && error.response.status === 403) {
-          alert.show("Database Error: You are not logged in", {
-            type: "error",
-          });
-        } else if (error && error.response && error.response.message) {
-          alert.show(error.response.message, { type: "error" });
-        } else {
-          alert.show("Oops! Something went wrong.", { type: "error" });
-        }
-      });
+        });
+    }
   };
 
   return (
@@ -357,7 +348,6 @@ export const ActionMemberBtns = (props) => {
           }
           alert.show(alertMessage, { type: "success" });
           refMemberForm.current.value = "";
-
           setIsClicked(false);
         })
         .catch((error) => {
