@@ -198,11 +198,6 @@ export const ProjectsList = (props) => {
 
 export const Project = (props) => {
   const { project, setProjectsInit, projectsInit } = props;
-  const [projectValues, setProjectValues] = useState({
-    title: project.title,
-    description: project.description,
-  });
-  const [membersList, setMembersList] = useState(project.members.name);
   const [isEdtProjectClicked, setIsEdtProjectClicked] = useState(false);
   const authToken = useSelector((state) => state.auth.token);
   const refTitle = useRef();
@@ -215,6 +210,9 @@ export const Project = (props) => {
     let message = cleanProjectData(title, description);
     if (message !== "") {
       alert.show(message, { type: "error" });
+    } else if (project.title === title && project.description === description) {
+      alert.show("no changes made!", { type: "error" });
+      setIsEdtProjectClicked(false);
     } else {
       let data = {
         title: title,
@@ -228,7 +226,8 @@ export const Project = (props) => {
             `Project "${response.data.title}" was successfully updated!`,
             { type: "success" }
           );
-          setProjectValues({ title: title, description: description });
+
+          //setting new array for edit
           let tmpProjArr = [];
           for (let i = 0; i < projectsInit.length; i++) {
             if (projectsInit[i].id === project.id) {
@@ -254,101 +253,103 @@ export const Project = (props) => {
 
   return (
     <>
-      <>
-        <section className="border-top border-bottom">
-          <div>
-            <div className="row ml-5 mr-2">
-              <div className="col-12">
-                {!isEdtProjectClicked ? (
-                  <h2 className="mt-2">{project.title}</h2>
-                ) : (
-                  <h2 className="mt-2">
-                    <input ref={refTitle} defaultValue={project.title}></input>
-                  </h2>
-                )}
-                <div>
-                  <em>
-                    <div>
-                      <span className="site-color">Started (PST): </span>
-                      {formatDate(project.begin_date)}
-                    </div>
-                    <div>
-                      <span className="site-color">Owner:</span>
-                      {` ${project.user.first_name} ${project.user.last_name}`}
-                    </div>
-                    <div>
-                      {membersList !== "" ? (
-                        <span>
-                          <span className="site-color">Members:</span>
-                          {` ${membersList}`}
-                        </span>
-                      ) : (
-                        <span>
-                          <span className="site-color">Members: </span>Add some
-                          members!
-                        </span>
-                      )}
-                    </div>
-                  </em>
-                </div>
-              </div>
-            </div>
-            <div className="row pt-2 pt-lg-5 ml-5">
-              <div className="col-12 col-md-8 col-lg-7">
-                <h5>About</h5>
-                {!isEdtProjectClicked ? (
-                  <p className="lead">{project.description}</p>
-                ) : (
-                  <p className="lead">
-                    <textarea
-                      ref={refDescription}
-                      defaultValue={project.description}
-                    ></textarea>
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="row justify-content-start mb-4 ml-4">
+      <section className="border-top border-bottom">
+        <div>
+          <div className="row ml-5 mr-2">
+            <div className="col-12">
               {!isEdtProjectClicked ? (
-                <>
-                  <div className="col-md-auto">
-                    <ActionMemberBtns
-                      setIsEdtProjectClicked={setIsEdtProjectClicked}
-                      setProjectsInit={setProjectsInit}
-                      projectsInit={projectsInit}
-                      project={project}
-                      setMembersList={setMembersList}
-                    />
-                  </div>
-                </>
+                <h2 className="mt-2">{project.title}</h2>
               ) : (
-                <>
-                  <div className="col-md-auto ml-2">
-                    <div className="btn">
-                      <button
-                        onClick={() => {
-                          onProjectEdtClick();
-                        }}
-                        className="helper-btn btn btn-info mx-1"
-                      >
-                        Save Changes
-                      </button>
-                      <button
-                        onClick={() => {
-                          setIsEdtProjectClicked(false);
-                        }}
-                        className="btn btn-secondary mx-1"
-                      >
-                        Cancel
-                      </button>
-                    </div>
+                <h2 className="mt-2">
+                  <input
+                    className="edit-proj-input"
+                    ref={refTitle}
+                    defaultValue={project.title}
+                  ></input>
+                </h2>
+              )}
+              <div>
+                <em>
+                  <div>
+                    <span className="site-color">Started (PST): </span>
+                    {formatDate(project.begin_date)}
                   </div>
-                </>
+                  <div>
+                    <span className="site-color">Owner:</span>
+                    {` ${project.user.first_name} ${project.user.last_name}`}
+                  </div>
+                  <div>
+                    {project.members.name !== "" ? (
+                      <span>
+                        <span className="site-color">Members:</span>
+                        {` ${project.members.name}`}
+                      </span>
+                    ) : (
+                      <span>
+                        <span className="site-color">Members: </span>Add some
+                        members!
+                      </span>
+                    )}
+                  </div>
+                </em>
+              </div>
+            </div>
+          </div>
+          <div className="row pt-2 pt-lg-5 ml-5">
+            <div className="col-12 col-md-8 col-lg-7">
+              <h5>About</h5>
+              {!isEdtProjectClicked ? (
+                <p className="lead">{project.description}</p>
+              ) : (
+                <p className="lead">
+                  <textarea
+                    className="edit-proj-textarea"
+                    ref={refDescription}
+                    defaultValue={project.description}
+                  ></textarea>
+                </p>
               )}
             </div>
           </div>
-        </section>
-      </>
+          <div className="row justify-content-start mb-4 ml-4">
+            {!isEdtProjectClicked ? (
+              <>
+                <div className="col-md-auto">
+                  <ActionMemberBtns
+                    setIsEdtProjectClicked={setIsEdtProjectClicked}
+                    setProjectsInit={setProjectsInit}
+                    projectsInit={projectsInit}
+                    project={project}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="col-md-auto ml-2">
+                  <div className="btn">
+                    <button
+                      onClick={() => {
+                        onProjectEdtClick();
+                      }}
+                      className="helper-btn btn btn-info mx-1"
+                    >
+                      Save Changes
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsEdtProjectClicked(false);
+                      }}
+                      className="btn btn-secondary mx-1"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </section>
     </>
   );
 };
@@ -356,7 +357,6 @@ export const Project = (props) => {
 export const ActionMemberBtns = (props) => {
   const {
     project,
-    setMembersList,
     setIsEdtProjectClicked,
     projectsInit,
     setProjectsInit,
@@ -406,14 +406,24 @@ export const ActionMemberBtns = (props) => {
       let headers = { Authorization: `Token ${auth.token}` };
       lookup("post", "projects/action/", data, headers)
         .then((response) => {
-          setMembersList(response.data.members.name);
+          //setting new array for edit
+          let tmpProjArr = [];
+          for (let i = 0; i < projectsInit.length; i++) {
+            if (projectsInit[i].id === project.id) {
+              let tmpElem = projectsInit[i];
+              tmpElem.members = response.data.members;
+              tmpProjArr.push(tmpElem);
+            } else {
+              tmpProjArr.push(projectsInit[i]);
+            }
+          }
+          setProjectsInit(tmpProjArr);
+
           let alertMessage = "Success!";
           if (response.data.message) {
             alertMessage = response.data.message;
-            refMemberForm.current.value = "";
           } else if (action === "add") {
             alertMessage = "Success! User " + member + " was added to project";
-            refMemberForm.current.value = "";
           } else {
             alertMessage =
               "Success! User " + member + " was removed from project";

@@ -15,7 +15,17 @@
 .member-form {
   height: 32px;
   width: 60%;
-  min-width: 130px;
+  min-width: 200px;
+}
+
+.edit-proj-input {
+  width: 40%;
+  min-width: 200px;
+}
+.edit-proj-textarea {
+  width: 70%;
+  min-height: 120px;
+  min-width: 200px;
 }
 
 .all-projects-header {
