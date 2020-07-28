@@ -22,22 +22,9 @@ export const ProjectComponent = () => {
     event.preventDefault();
     let title = refTitle.current.value;
     let description = refDescription.current.value;
-    if (title.length < 3) {
-      alert.show("Title must be at least 3 characters long!", {
-        type: "error",
-      });
-    } else if (title.length > 50) {
-      alert.show("Title must be 50 characters or less!", {
-        type: "error",
-      });
-    } else if (description.length < 20) {
-      alert.show("Description must be at least 20 characters long!", {
-        type: "error",
-      });
-    } else if (description.length > 1000) {
-      alert.show("Description must be 1,000 characters or less!", {
-        type: "error",
-      });
+    let message = cleanProjectData(title, description);
+    if (message !== "") {
+      alert.show(message, { type: "error" });
     } else {
       const data = {
         title: title,
@@ -199,42 +186,44 @@ export const Project = (props) => {
   const { project, setNumOfProjects } = props;
   const [isDeleted, setIsDeleted] = useState(false);
   const [membersList, setMembersList] = useState(project.members.name);
+  const [isEdtProjectClicked, setIsEdtProjectClicked] = useState(false);
+  const authToken = useSelector((state) => state.auth.token);
+  const refTitle = useRef();
+  const refDescription = useRef();
+  const alert = useAlert();
 
   useEffect(() => {
     if (isDeleted) setNumOfProjects((state) => state - 1);
   }, [isDeleted, setNumOfProjects]);
 
-  const formatDate = (date) => {
-    let year = date.slice(0, 4);
-    let month = date.slice(5, 7);
-    let day = date.slice(8);
-    let month_names = {
-      "01": "January",
-      "02": "February",
-      "03": "March",
-      "04": "April",
-      "05": "May",
-      "06": "June",
-      "07": "July",
-      "08": "August",
-      "09": "September",
-      "10": "October",
-      "11": "November",
-      "12": "December",
-    };
-    if (day[0] === "0") {
-      day = day.split(1);
-    }
-    if (day === "1") {
-      day = day + "st";
-    } else if (day === "2") {
-      day = day + "nd";
-    } else if (day === "3") {
-      day = day + "rd";
+  const onProjectEdtClick = () => {
+    let title = refTitle.current.value;
+    let description = refDescription.current.value;
+    let message = cleanProjectData(title, description);
+    if (message !== "") {
+      alert.show(message, { type: "error" });
     } else {
-      day = day + "th";
+      let data = {
+        title: title,
+        description: description,
+      };
+      let headers = { Authorization: `Token ${authToken}` };
+
+      lookup("post", `projects/${project.id}/update/`, data, headers)
+        .then((response) => {
+          alert.show(
+            `Project "${response.data.title}" was successfully updated!`,
+            { type: "success" }
+          );
+          setIsEdtProjectClicked(false);
+        })
+        .catch((error) => {
+          console.log(error.response);
+          alert.show("Oops! Something went wrong updating!", {
+            type: "error",
+          });
+        });
     }
-    return `${month_names[month]} ${day}, ${year}`;
   };
 
   return (
@@ -245,7 +234,16 @@ export const Project = (props) => {
             <div>
               <div className="row ml-5 mr-2">
                 <div className="col-12">
-                  <h2 className="mt-2">{project.title}</h2>
+                  {!isEdtProjectClicked ? (
+                    <h2 className="mt-2">{project.title}</h2>
+                  ) : (
+                    <h2 className="mt-2">
+                      <input
+                        ref={refTitle}
+                        defaultValue={project.title}
+                      ></input>
+                    </h2>
+                  )}
                   <div>
                     <em>
                       <div>
@@ -276,17 +274,54 @@ export const Project = (props) => {
               <div className="row pt-2 pt-lg-5 ml-5">
                 <div className="col-12 col-md-8 col-lg-7">
                   <h5>About</h5>
-                  <p className="lead">{project.description}</p>
+                  {!isEdtProjectClicked ? (
+                    <p className="lead">{project.description}</p>
+                  ) : (
+                    <p className="lead">
+                      <textarea
+                        ref={refDescription}
+                        defaultValue={project.description}
+                      ></textarea>
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="row justify-content-start mb-4 ml-4">
-                <div className="col-md-auto">
-                  <ActionMemberBtns
-                    project={project}
-                    setIsDeleted={setIsDeleted}
-                    setMembersList={setMembersList}
-                  />
-                </div>
+                {!isEdtProjectClicked ? (
+                  <>
+                    <div className="col-md-auto">
+                      <ActionMemberBtns
+                        setIsEdtProjectClicked={setIsEdtProjectClicked}
+                        project={project}
+                        setIsDeleted={setIsDeleted}
+                        setMembersList={setMembersList}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="col-md-auto ml-2">
+                      <div className="btn">
+                        <button
+                          onClick={() => {
+                            onProjectEdtClick();
+                          }}
+                          className="helper-btn btn btn-info mx-1"
+                        >
+                          Save Changes
+                        </button>
+                        <button
+                          onClick={() => {
+                            setIsEdtProjectClicked(false);
+                          }}
+                          className="btn btn-secondary mx-1"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </section>
@@ -297,7 +332,12 @@ export const Project = (props) => {
 };
 
 export const ActionMemberBtns = (props) => {
-  const { project, setIsDeleted, setMembersList } = props;
+  const {
+    project,
+    setIsDeleted,
+    setMembersList,
+    setIsEdtProjectClicked,
+  } = props;
   const [isClicked, setIsClicked] = useState(false);
   const refMemberForm = useRef();
   const alert = useAlert();
@@ -420,6 +460,14 @@ export const ActionMemberBtns = (props) => {
             <>
               <button
                 onClick={() => {
+                  setIsEdtProjectClicked(true);
+                }}
+                className="brk-btn mx-1"
+              >
+                Edit Project
+              </button>
+              <button
+                onClick={() => {
                   setIsClicked(true);
                 }}
                 className="brk-btn mx-1"
@@ -442,4 +490,53 @@ export const ActionMemberBtns = (props) => {
       ) : null}
     </>
   );
+};
+
+// HELPER FUNCTIONS
+
+const formatDate = (date) => {
+  let year = date.slice(0, 4);
+  let month = date.slice(5, 7);
+  let day = date.slice(8);
+  let month_names = {
+    "01": "January",
+    "02": "February",
+    "03": "March",
+    "04": "April",
+    "05": "May",
+    "06": "June",
+    "07": "July",
+    "08": "August",
+    "09": "September",
+    "10": "October",
+    "11": "November",
+    "12": "December",
+  };
+  if (day[0] === "0") {
+    day = day.split(1);
+  }
+  if (day === "1") {
+    day = day + "st";
+  } else if (day === "2") {
+    day = day + "nd";
+  } else if (day === "3") {
+    day = day + "rd";
+  } else {
+    day = day + "th";
+  }
+  return `${month_names[month]} ${day}, ${year}`;
+};
+
+const cleanProjectData = (title, description) => {
+  let message = "";
+  if (title.length < 3) {
+    message = "Title must be at least 3 characters long!";
+  } else if (title.length > 50) {
+    message = "Title must be 50 characters or less!";
+  } else if (description.length < 20) {
+    message = "Description must be at least 20 characters long!";
+  } else if (description.length > 1000) {
+    message = "Description must be 1,000 characters or less!";
+  }
+  return message;
 };
