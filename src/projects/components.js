@@ -185,6 +185,10 @@ export const ProjectsList = (props) => {
 export const Project = (props) => {
   const { project, setNumOfProjects } = props;
   const [isDeleted, setIsDeleted] = useState(false);
+  const [projectValues, setProjectValues] = useState({
+    title: project.title,
+    description: project.description,
+  });
   const [membersList, setMembersList] = useState(project.members.name);
   const [isEdtProjectClicked, setIsEdtProjectClicked] = useState(false);
   const authToken = useSelector((state) => state.auth.token);
@@ -215,6 +219,7 @@ export const Project = (props) => {
             `Project "${response.data.title}" was successfully updated!`,
             { type: "success" }
           );
+          setProjectValues({ title: title, description: description });
           setIsEdtProjectClicked(false);
         })
         .catch((error) => {
@@ -235,12 +240,12 @@ export const Project = (props) => {
               <div className="row ml-5 mr-2">
                 <div className="col-12">
                   {!isEdtProjectClicked ? (
-                    <h2 className="mt-2">{project.title}</h2>
+                    <h2 className="mt-2">{projectValues.title}</h2>
                   ) : (
                     <h2 className="mt-2">
                       <input
                         ref={refTitle}
-                        defaultValue={project.title}
+                        defaultValue={projectValues.title}
                       ></input>
                     </h2>
                   )}
@@ -275,12 +280,12 @@ export const Project = (props) => {
                 <div className="col-12 col-md-8 col-lg-7">
                   <h5>About</h5>
                   {!isEdtProjectClicked ? (
-                    <p className="lead">{project.description}</p>
+                    <p className="lead">{projectValues.description}</p>
                   ) : (
                     <p className="lead">
                       <textarea
                         ref={refDescription}
-                        defaultValue={project.description}
+                        defaultValue={projectValues.description}
                       ></textarea>
                     </p>
                   )}
