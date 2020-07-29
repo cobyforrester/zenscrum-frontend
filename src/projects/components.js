@@ -64,7 +64,7 @@ export const ProjectComponent = () => {
         </div>
       </div>
       <div className="row justify-content-md-center">
-        <div className="create-project-form col-12 mb-3 text-center">
+        <div className=" col-12 mb-3 text-center">
           <form className="project-create-form" onSubmit={handleSubmit}>
             {isClickedCreate ? (
               <>
@@ -143,10 +143,6 @@ export const ProjectsList = (props) => {
   const { setProjects, projects, setProjectsLoading } = props;
   const alert = useAlert();
   const authToken = useSelector((state) => state.auth.token);
-
-  useEffect(() => {
-    console.log("PROJECTS : ", projects);
-  }, [projects]);
 
   useEffect(() => {
     let headers = { Authorization: `Token ${authToken}` };
@@ -397,18 +393,14 @@ export const ActionMemberBtns = (props) => {
           setIsClicked(false);
         })
         .catch((error) => {
-          let errorMessage = "";
-          if (error.response.data.message === undefined) {
-            if (
-              error.response.status === 403 ||
-              error.response.status === 401
-            ) {
-              errorMessage = "Database Error: You are not logged in";
-            } else {
-              errorMessage = error.message;
-            }
-          } else {
-            errorMessage = "Database Error: " + error.response.data.message;
+          let errorMessage = "Oops! Something went wrong!";
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
+            errorMessage = "Error: " + error.response.data.message;
           }
           alert.show(errorMessage, { type: "error" });
         });

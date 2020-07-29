@@ -12,6 +12,20 @@
   text-align: left;
 }
 
+.sprint-form-create {
+  display: block !important;
+  width: 50% !important;
+  max-width: 450px !important;
+  text-align: left;
+}
+
+.date-range-sprints input {
+  display: block !important;
+  width: 20% !important;
+  max-width: 170px !important;
+  text-align: left;
+}
+
 .member-form {
   height: 32px;
   width: 60%;
