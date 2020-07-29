@@ -8,10 +8,14 @@ import { Redirect, Link } from "react-router-dom";
 export const SprintComponent = ({ match }) => {
   const [sprints, setSprints] = useState([]);
   const refGoal = useRef();
+  const refStartDate = useRef();
+  const refEndDate = useRef();
   const [isClickedCreate, setIsClickedCreate] = useState(false);
   const alert = useAlert();
   const auth = useSelector((state) => state.auth);
   const [sprintsLoading, setSprintsLoading] = useState(true);
+  let todayDate = new Date().toISOString().slice(0, 10);
+  let newDate = new Date(Date.now() + 12096e5).toISOString().slice(0, 10);
 
   if (!auth.isAuthenticated) {
     return <Redirect to="/login" />;
@@ -20,15 +24,17 @@ export const SprintComponent = ({ match }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     let goal = refGoal.current.value;
-    let message = cleanSprintData(goal);
+    let start_date = refStartDate.current.value;
+    let end_date = refEndDate.current.value;
+    let message = cleanSprintData(goal, start_date, end_date);
     if (message !== "") {
       alert.show(message, { type: "error" });
     } else {
       const data = {
         goal: goal,
         project: match.params.id,
-        start_date: "2020-07-20",
-        end_date: "2020-06-20",
+        start_date: start_date,
+        end_date: end_date,
       };
       let headers = { Authorization: `Token ${auth.token}` };
       let tempNewSprint = [...sprints];
@@ -65,15 +71,17 @@ export const SprintComponent = ({ match }) => {
                 <div className="d-flex justify-content-center input-group date-range-sprints input-daterange">
                   <div className="mt-2">From:</div>
                   <input
-                    type="text"
+                    type="date"
+                    ref={refStartDate}
                     className="form-control mx-2"
-                    defaultValue="2012-04-05"
+                    defaultValue={todayDate}
                   />
                   <div className="mt-2">To:</div>
                   <input
-                    type="text"
+                    type="date"
+                    ref={refEndDate}
                     className="form-control mx-2"
-                    defaultValue="2012-04-19"
+                    defaultValue={newDate}
                   />
                 </div>
                 <div className="d-flex justify-content-center">
@@ -530,9 +538,22 @@ const formatDate = (date) => {
   return `${month_names[month]} ${day}, ${year}`;
 };
 
-const cleanSprintData = (goal) => {
+const cleanSprintData = (goal, start_date, end_date) => {
   let message = "";
-  if (goal.length < 20) {
+  if (parseInt(start_date.slice(0, 4)) > parseInt(end_date.slice(0, 4))) {
+    message = "Start date cannot be greater than or equal to end date!";
+  } else if (
+    parseInt(start_date.slice(0, 4)) === parseInt(end_date.slice(0, 4)) &&
+    parseInt(start_date.slice(5, 7)) > parseInt(end_date.slice(5, 7))
+  ) {
+    message = "Start date cannot be greater than or equal to end date!";
+  } else if (
+    parseInt(start_date.slice(0, 4)) === parseInt(end_date.slice(0, 4)) &&
+    parseInt(start_date.slice(5, 7)) === parseInt(end_date.slice(5, 7)) &&
+    parseInt(start_date.slice(8, 10)) >= parseInt(end_date.slice(8, 10))
+  ) {
+    message = "Start date cannot be greater than or equal to end date!";
+  } else if (goal.length < 20) {
     message = "Goal must be at least 20 characters long!";
   } else if (goal.length > 1000) {
     message = "Goal must be 1,000 characters or less!";
