@@ -211,7 +211,7 @@ export const Project = (props) => {
     if (message !== "") {
       alert.show(message, { type: "error" });
     } else if (project.title === title && project.description === description) {
-      alert.show("no changes made!", { type: "error" });
+      alert.show("You didn't change anything!", { type: "error" });
       setIsEdtProjectClicked(false);
     } else {
       let data = {
@@ -386,22 +386,7 @@ export const ActionMemberBtns = (props) => {
         alert.show("Project successfully deleted!", { type: "success" });
       })
       .catch((error) => {
-        let errorMessage = "Opops! something went wrong!";
-        if (error && error.response) {
-          if (error.response.status === 403 || error.response.status === 401) {
-            errorMessage = "Database Error: You are not logged in";
-          } else {
-            errorMessage = error.message;
-          }
-        } else if (
-          error &&
-          error.response &&
-          error.response.data &&
-          error.response.data.message
-        ) {
-          errorMessage = "Database Error: " + error.response.data.message;
-        }
-        alert.show(errorMessage, { type: "error" });
+        alert.show("Oops! something went wrong!", { type: "error" });
       });
   };
 
