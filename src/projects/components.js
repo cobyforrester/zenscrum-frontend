@@ -299,7 +299,7 @@ export const Project = (props) => {
             <div className="col-12 col-md-8 col-lg-7">
               <h5>About</h5>
               {!isEdtProjectClicked ? (
-                <p className="lead">{project.description}</p>
+                <p className="lead mr-4">{project.description}</p>
               ) : (
                 <p className="lead">
                   <textarea
@@ -362,9 +362,17 @@ export const ActionMemberBtns = (props) => {
     setProjectsInit,
   } = props;
   const [isClicked, setIsClicked] = useState(false);
+  const [windowSize, setWindowSize] = useState(window.innerWidth);
   const refMemberForm = useRef();
   const alert = useAlert();
   const auth = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize(window.innerWidth);
+    };
+    window.addEventListener("resize", handleResize);
+  }, []);
 
   const doDelete = () => {
     let headers = { Authorization: `Token ${auth.token}` };
@@ -508,11 +516,14 @@ export const ActionMemberBtns = (props) => {
               >
                 Edit Project
               </button>
+
+              {windowSize < 800 ? <br /> : null}
+
               <button
                 onClick={() => {
                   setIsClicked(true);
                 }}
-                className="brk-btn mx-1"
+                className="brk-btn mx-1 mt-1"
               >
                 Edit Members
               </button>
