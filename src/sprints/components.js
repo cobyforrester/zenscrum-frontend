@@ -7,6 +7,9 @@ import { Redirect, Link } from "react-router-dom";
 // All code blow for creating new project
 export const SprintComponent = ({ match }) => {
   const [sprints, setSprints] = useState([]);
+  const [project, setProject] = useState({
+    user: { username: "", first_name: "", last_name: "" },
+  }); //setting for if doesnt load
   const refGoal = useRef();
   const refStartDate = useRef();
   const refEndDate = useRef();
@@ -16,6 +19,20 @@ export const SprintComponent = ({ match }) => {
   const [sprintsLoading, setSprintsLoading] = useState(true);
   let todayDate = new Date().toISOString().slice(0, 10);
   let newDate = new Date(Date.now() + 12096e5).toISOString().slice(0, 10);
+
+  useEffect(() => {
+    let headers = { Authorization: `Token ${auth.token}` };
+    lookup("get", `projects/${match.params.id}/`, {}, headers)
+      .then((response) => {
+        setProject(response.data);
+      })
+      .catch((error) => {
+        console.log(error.response);
+        alert.show("Oops! Something went wrong finding sprint!", {
+          type: "error",
+        });
+      });
+  }, [auth, alert, setProject, match]);
 
   if (!auth.isAuthenticated) {
     return <Redirect to="/login" />;
@@ -40,7 +57,6 @@ export const SprintComponent = ({ match }) => {
       let tempNewSprint = [...sprints];
       lookup("post", "sprints/create/", data, headers)
         .then((response) => {
-          console.log(response.data);
           tempNewSprint.unshift(response.data); //adds new sprint to total list
           //setSprints(tempNewSprint); //sets new sprints to updated list
           refGoal.current.value = "";
@@ -60,7 +76,7 @@ export const SprintComponent = ({ match }) => {
     <div>
       <div className="row justify-content-md-center">
         <div className="col-12 my-3 mx-auto text-center">
-          <h1 className="all-projects-header">Sprints for {match.params.id}</h1>
+          <h1 className="all-projects-header">All {project.title} Sprints</h1>
         </div>
       </div>
       <div className="row justify-content-md-center">
@@ -118,7 +134,8 @@ export const SprintComponent = ({ match }) => {
             ) : null}
 
             <div className="btn">
-              {!isClickedCreate ? (
+              {!isClickedCreate &&
+              project.user.username === auth.user.username ? (
                 <>
                   <button
                     onClick={() => {
@@ -134,10 +151,12 @@ export const SprintComponent = ({ match }) => {
           </form>
         </div>
       </div>
-      <ProjectsList
+      <SprintsList
         setSprintsLoading={setSprintsLoading}
         sprints={sprints}
         setSprints={setSprints}
+        project={project}
+        match={match}
       />
       {!sprintsLoading && sprints.length === 0 && !isClickedCreate ? (
         <h3 className="mt-3 text-center">
@@ -149,17 +168,18 @@ export const SprintComponent = ({ match }) => {
 };
 
 // All Below for box view
-export const ProjectsList = (props) => {
-  const { setSprints, sprints, setSprintsLoading } = props;
+export const SprintsList = (props) => {
+  const { setSprints, sprints, setSprintsLoading, project, match } = props;
   const alert = useAlert();
   const authToken = useSelector((state) => state.auth.token);
 
   useEffect(() => {
     let headers = { Authorization: `Token ${authToken}` };
-    lookup("get", "projects/", {}, headers)
+    lookup("get", `sprints/${match.params.id}/`, {}, headers)
       .then((response) => {
         setSprints(response.data);
         setSprintsLoading(false);
+        console.log(response.data);
       })
       .catch((error) => {
         console.log(error);
@@ -167,64 +187,67 @@ export const ProjectsList = (props) => {
           type: "error",
         });
       });
-  }, [alert, authToken, setSprints, setSprintsLoading]);
+  }, [alert, authToken, setSprints, setSprintsLoading, match]);
 
   return sprints.map((item, index) => {
     return (
-      <Project
+      <Sprint
         projects={sprints}
         setSprints={setSprints}
-        project={item}
-        key={`${index}-item.id`}
-        ind={index}
+        project={project}
+        sprint={item}
+        match={match}
+        key={`${index}-item-sprint.id`}
+        index={index}
       />
     );
   });
 };
 
-export const Project = (props) => {
-  const { project, setSprints, sprints } = props;
-  const [isEdtProjectClicked, setIsEdtProjectClicked] = useState(false);
+export const Sprint = (props) => {
+  const { setSprints, sprints, sprint, match, index, project } = props;
+  const [isEdtSprintClicked, setIsEdtSprintClicked] = useState(false);
   const authToken = useSelector((state) => state.auth.token);
-  const refTitle = useRef();
-  const refDescription = useRef();
+  const refGoal = useRef();
+  const refStartDate = useRef();
+  const refEndDate = useRef();
   const alert = useAlert();
 
-  const onProjectEdtClick = () => {
-    let title = refTitle.current.value;
-    let description = refDescription.current.value;
-    let message = cleanSprintData(title, description);
+  const onSprintEdtClick = () => {
+    let goal = refGoal.current.value;
+    let start_date = refStartDate.current.value;
+    let end_date = refEndDate.current.value;
+    let message = cleanSprintData(goal, start_date, end_date);
     if (message !== "") {
       alert.show(message, { type: "error" });
-    } else if (project.title === title && project.description === description) {
+    } else if (sprint.goal === goal && sprint.start_date === start_date) {
       alert.show("You didn't change anything!", { type: "error" });
-      setIsEdtProjectClicked(false);
+      setIsEdtSprintClicked(false);
     } else {
       let data = {
-        title: title,
-        description: description,
+        goal: goal,
+        start_date: start_date,
+        end_date: end_date,
       };
       let headers = { Authorization: `Token ${authToken}` };
 
-      lookup("post", `projects/${project.id}/update/`, data, headers)
+      lookup("post", `projects/${match.params.id}/update/`, data, headers)
         .then((response) => {
-          alert.show(
-            `Project "${response.data.title}" was successfully updated!`,
-            { type: "success" }
-          );
+          alert.show(`Sprint was successfully updated!`, { type: "success" });
 
           //setting new array for edit
           let tmpProjArr = sprints.map((item) => {
-            if (item.id === project.id) {
+            if (item.id === sprint.id) {
               let tmpElem = item;
-              tmpElem.title = title;
-              tmpElem.description = description;
+              tmpElem.goal = goal;
+              tmpElem.start_date = start_date;
+              tmpElem.end_date = end_date;
               return tmpElem;
             }
             return item;
           });
           setSprints(tmpProjArr);
-          setIsEdtProjectClicked(false);
+          setIsEdtSprintClicked(false);
         })
         .catch((error) => {
           console.log(error.response);
@@ -241,69 +264,47 @@ export const Project = (props) => {
         <div>
           <div className="row ml-5 mr-2">
             <div className="col-12">
-              {!isEdtProjectClicked ? (
-                <h2 className="mt-2">{project.title}</h2>
-              ) : (
-                <h2 className="mt-2">
-                  <input
-                    className="edit-proj-input"
-                    ref={refTitle}
-                    defaultValue={project.title}
-                  ></input>
-                </h2>
-              )}
+              <h2 className="mt-2">Sprint {index + 1}</h2>
               <div>
                 <em>
-                  <div>
-                    <span className="site-color">Started (PST): </span>
-                    {formatDate(project.begin_date)}
-                  </div>
-                  <div>
-                    <span className="site-color">Owner:</span>
-                    {` ${project.user.first_name} ${project.user.last_name}`}
-                  </div>
-                  <div>
-                    {project.members.name !== "" ? (
-                      <span>
-                        <span className="site-color">Members:</span>
-                        {` ${project.members.name}`}
-                      </span>
-                    ) : (
-                      <span>
-                        <span className="site-color">Members: </span>Add some
-                        members!
-                      </span>
-                    )}
-                  </div>
+                  {!isEdtSprintClicked ? (
+                    <div>
+                      <span className="site-color">Timeline (PST): </span>
+                      {formatDate(sprint.start_date)} -{" "}
+                      {formatDate(sprint.end_date)}
+                    </div>
+                  ) : null}
                 </em>
               </div>
             </div>
           </div>
           <div className="row pt-2 pt-lg-5 ml-5">
             <div className="col-12 col-md-8 col-lg-7">
-              <h5>About</h5>
-              {!isEdtProjectClicked ? (
-                <p className="lead mr-4">{project.description}</p>
+              <h5>Goal</h5>
+              {!isEdtSprintClicked ? (
+                <p className="lead mr-4">{sprint.goal}</p>
               ) : (
                 <p className="lead">
                   <textarea
                     className="edit-proj-textarea"
-                    ref={refDescription}
-                    defaultValue={project.description}
+                    ref={refGoal}
+                    defaultValue={sprint.goal}
                   ></textarea>
                 </p>
               )}
             </div>
           </div>
           <div className="row justify-content-start mb-4 ml-4">
-            {!isEdtProjectClicked ? (
+            {!isEdtSprintClicked ? (
               <>
                 <div className="col-md-auto">
                   <ActionMemberBtns
-                    setIsEdtProjectClicked={setIsEdtProjectClicked}
+                    setIsEdtSprintClicked={setIsEdtSprintClicked}
                     setSprints={setSprints}
                     sprints={sprints}
+                    sprint={sprint}
                     project={project}
+                    match={match}
                   />
                 </div>
               </>
@@ -313,7 +314,7 @@ export const Project = (props) => {
                   <div className="btn">
                     <button
                       onClick={() => {
-                        onProjectEdtClick();
+                        onSprintEdtClick();
                       }}
                       className="helper-btn btn btn-info mx-1"
                     >
@@ -321,7 +322,7 @@ export const Project = (props) => {
                     </button>
                     <button
                       onClick={() => {
-                        setIsEdtProjectClicked(false);
+                        setIsEdtSprintClicked(false);
                       }}
                       className="btn btn-secondary mx-1"
                     >
@@ -339,10 +340,15 @@ export const Project = (props) => {
 };
 
 export const ActionMemberBtns = (props) => {
-  const { project, setIsEdtProjectClicked, sprints, setSprints } = props;
-  const [isClicked, setIsClicked] = useState(false);
+  const {
+    sprint,
+    project,
+    setIsEdtSprintClicked,
+    sprints,
+    setSprints,
+    match,
+  } = props;
   const [windowSize, setWindowSize] = useState(window.innerWidth);
-  const refMemberForm = useRef();
   const alert = useAlert();
   const auth = useSelector((state) => state.auth);
 
@@ -355,150 +361,50 @@ export const ActionMemberBtns = (props) => {
 
   const doDelete = () => {
     let headers = { Authorization: `Token ${auth.token}` };
-    lookup("post", `projects/${project.id}/delete/`, {}, headers)
+    lookup("post", `projects/${match.params.id}/delete/`, {}, headers)
       .then((response) => {
         setSprints(
           sprints.filter((item) => {
-            return item.id !== project.id;
+            return item.id !== sprint.id;
           })
         );
-        alert.show("Project successfully deleted!", { type: "success" });
+        alert.show("Sprint successfully deleted!", { type: "success" });
       })
       .catch((error) => {
         alert.show("Oops! something went wrong!", { type: "error" });
       });
   };
 
-  const doAddRemove = (action) => {
-    let member = refMemberForm.current.value;
-    if (member === "") {
-      alert.show("Error: No username typed", { type: "error" });
-    } else {
-      let data = { id: project.id, action: action, member: member };
-      let headers = { Authorization: `Token ${auth.token}` };
-      lookup("post", "projects/action/", data, headers)
-        .then((response) => {
-          //setting new array for edit
-          let tmpProjArr = sprints.map((item) => {
-            if (item.id === project.id) {
-              let tmpElem = item;
-              tmpElem.members = response.data.members;
-              return tmpElem;
-            }
-            return item;
-          });
-          setSprints(tmpProjArr);
-
-          let alertMessage = "Success!";
-          if (response.data.message) {
-            alertMessage = response.data.message;
-          } else if (action === "add") {
-            alertMessage = "Success! User " + member + " was added to project";
-          } else {
-            alertMessage =
-              "Success! User " + member + " was removed from project";
-          }
-          alert.show(alertMessage, { type: "success" });
-          refMemberForm.current.value = "";
-          setIsClicked(false);
-        })
-        .catch((error) => {
-          let errorMessage = "Oops! Something went wrong!";
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            error.response.data.message
-          ) {
-            errorMessage = "Error: " + error.response.data.message;
-          }
-          alert.show(errorMessage, { type: "error" });
-        });
-    }
-  };
   return (
     <>
-      {isClicked ? (
-        <>
-          <form className="m-1 text-center">
-            <input
-              required={true}
-              className="project-input member-form"
-              ref={refMemberForm}
-              placeholder="Enter Username"
-            ></input>
-          </form>
-          <div className="btn">
+      <div className="btn">
+        <Link to={`/sprints/${match.params.id}`}>
+          <button className="brk-btn mx-1">Tasks</button>
+        </Link>
+        {project.user.username === auth.user.username ? (
+          <>
             <button
               onClick={() => {
-                doAddRemove("add");
+                setIsEdtSprintClicked(true);
               }}
-              className="helper-btn btn btn-info mx-1"
+              className="brk-btn mx-1"
             >
-              Add User
+              Edit Sprint
             </button>
 
             <button
               onClick={() => {
-                doAddRemove("remove");
+                window.confirm(
+                  "Are you sure you wish to delete this Sprint?\n This cannot be undone."
+                ) && doDelete();
               }}
-              className="helper-btn btn btn-info mx-1"
+              className="brk-btn mx-1"
             >
-              Remove User
+              Delete
             </button>
-            <button
-              onClick={() => {
-                refMemberForm.current.value = "";
-                setIsClicked(false);
-              }}
-              className="btn btn-secondary mx-1"
-            >
-              Cancel
-            </button>
-          </div>
-        </>
-      ) : null}
-
-      {!isClicked ? (
-        <div className="btn">
-          <Link to={`/sprints/${project.id}`}>
-            <button className="brk-btn mx-1">Sprints</button>
-          </Link>
-          {project.user.username === auth.user.username ? (
-            <>
-              <button
-                onClick={() => {
-                  setIsEdtProjectClicked(true);
-                }}
-                className="brk-btn mx-1"
-              >
-                Edit Project
-              </button>
-
-              {windowSize < 800 ? <br /> : null}
-
-              <button
-                onClick={() => {
-                  setIsClicked(true);
-                }}
-                className="brk-btn mx-1 mt-1"
-              >
-                Edit Members
-              </button>
-              <button
-                onClick={() => {
-                  window.confirm(
-                    "Are you sure you wish to delete this project?\n This cannot be undone."
-                  ) && doDelete();
-                }}
-                className="brk-btn mx-1"
-              >
-                Delete
-              </button>
-            </>
-          ) : null}
-        </div>
-      ) : null}
+          </>
+        ) : null}
+      </div>
     </>
   );
 };
