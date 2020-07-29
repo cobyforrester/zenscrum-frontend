@@ -6,19 +6,15 @@ import { Redirect, Link } from "react-router-dom";
 
 // All code blow for creating new project
 export const ProjectComponent = () => {
-  const [newProjects, setNewProjects] = useState([]);
-  const [numOfProjects, setNumOfProjects] = useState(null); //to count how many we have at any moment
+  const [projects, setProjects] = useState([]);
   const refTitle = useRef();
   const refDescription = useRef();
   const [isClickedCreate, setIsClickedCreate] = useState(false);
   const alert = useAlert();
-  const authToken = useSelector((state) => state.auth.token);
-  const authState = useSelector((state) => state.auth.isAuthenticated);
+  const auth = useSelector((state) => state.auth);
+  const [projectsLoading, setProjectsLoading] = useState(true);
 
-  useEffect(() => {
-    console.log("NEW PROJECTS : ", newProjects);
-  }, [newProjects]);
-  if (!authState) {
+  if (!auth.isAuthenticated) {
     return <Redirect to="/login" />;
   }
 
@@ -34,19 +30,15 @@ export const ProjectComponent = () => {
         title: title,
         description: refDescription.current.value,
       };
-      let headers = { Authorization: `Token ${authToken}` };
+      let headers = { Authorization: `Token ${auth.token}` };
 
-      let tempNewProjects = [...newProjects];
+      let tempNewProject = [...projects];
 
       lookup("post", "projects/create/", data, headers)
         .then((response) => {
-          numOfProjects
-            ? setNumOfProjects((state) => state + 1)
-            : setNumOfProjects(1); //sets num of projects state
-
           //setNumOfProjects((state) => 1); //sets the total projects to 1
-          tempNewProjects.unshift(response.data); //adds new project to total list
-          setNewProjects(tempNewProjects); //sets new projects to updated list
+          tempNewProject.unshift(response.data); //adds new project to total list
+          setProjects(tempNewProject); //sets new projects to updated list
           refTitle.current.value = "";
           refDescription.current.value = "";
           setIsClickedCreate(false);
@@ -133,11 +125,11 @@ export const ProjectComponent = () => {
         </div>
       </div>
       <ProjectsList
-        setNumOfProjects={setNumOfProjects}
-        newProjects={newProjects}
-        setNewProjects={setNewProjects}
+        setProjectsLoading={setProjectsLoading}
+        projects={projects}
+        setProjects={setProjects}
       />
-      {numOfProjects === 0 && !isClickedCreate ? (
+      {!projectsLoading && projects.length === 0 && !isClickedCreate ? (
         <h3 className="mt-3 text-center">
           No Projects? Click on "NEW PROJECT" above to create a new project!
         </h3>
@@ -148,9 +140,7 @@ export const ProjectComponent = () => {
 
 // All Below for box view
 export const ProjectsList = (props) => {
-  const { setNumOfProjects, setNewProjects, newProjects } = props;
-  const [projectsInit, setProjectsInit] = useState([]);
-  const [projects, setProjects] = useState([]);
+  const { setProjects, projects, setProjectsLoading } = props;
   const alert = useAlert();
   const authToken = useSelector((state) => state.auth.token);
 
@@ -159,21 +149,11 @@ export const ProjectsList = (props) => {
   }, [projects]);
 
   useEffect(() => {
-    //if property changes combine initial projects with what is added
-    const final = [...newProjects].concat(projectsInit);
-    if (final.length !== projects.length) {
-      setProjects(final);
-      setProjectsInit(final);
-      setNewProjects([]);
-    }
-  }, [projectsInit, projects, newProjects, setNewProjects]);
-
-  useEffect(() => {
     let headers = { Authorization: `Token ${authToken}` };
     lookup("get", "projects/", {}, headers)
       .then((response) => {
-        setProjectsInit(response.data);
-        setNumOfProjects(response.data.length); //setting it so we know if we have no projects
+        setProjects(response.data);
+        setProjectsLoading(false);
       })
       .catch((error) => {
         console.log(error);
@@ -181,13 +161,13 @@ export const ProjectsList = (props) => {
           type: "error",
         });
       });
-  }, [alert, authToken, setNumOfProjects]);
+  }, [alert, authToken, setProjects, setProjectsLoading]);
 
   return projects.map((item, index) => {
     return (
       <Project
-        projectsInit={projectsInit}
-        setProjectsInit={setProjectsInit}
+        projects={projects}
+        setProjects={setProjects}
         project={item}
         key={`${index}-item.id`}
         ind={index}
@@ -197,7 +177,7 @@ export const ProjectsList = (props) => {
 };
 
 export const Project = (props) => {
-  const { project, setProjectsInit, projectsInit } = props;
+  const { project, setProjects, projects } = props;
   const [isEdtProjectClicked, setIsEdtProjectClicked] = useState(false);
   const authToken = useSelector((state) => state.auth.token);
   const refTitle = useRef();
@@ -228,18 +208,16 @@ export const Project = (props) => {
           );
 
           //setting new array for edit
-          let tmpProjArr = [];
-          for (let i = 0; i < projectsInit.length; i++) {
-            if (projectsInit[i].id === project.id) {
-              let tmpElem = projectsInit[i];
+          let tmpProjArr = projects.map((item) => {
+            if (item.id === project.id) {
+              let tmpElem = item;
               tmpElem.title = title;
               tmpElem.description = description;
-              tmpProjArr.push(tmpElem);
-            } else {
-              tmpProjArr.push(projectsInit[i]);
+              return tmpElem;
             }
-          }
-          setProjectsInit(tmpProjArr);
+            return item;
+          });
+          setProjects(tmpProjArr);
           setIsEdtProjectClicked(false);
         })
         .catch((error) => {
@@ -317,8 +295,8 @@ export const Project = (props) => {
                 <div className="col-md-auto">
                   <ActionMemberBtns
                     setIsEdtProjectClicked={setIsEdtProjectClicked}
-                    setProjectsInit={setProjectsInit}
-                    projectsInit={projectsInit}
+                    setProjects={setProjects}
+                    projects={projects}
                     project={project}
                   />
                 </div>
@@ -355,12 +333,7 @@ export const Project = (props) => {
 };
 
 export const ActionMemberBtns = (props) => {
-  const {
-    project,
-    setIsEdtProjectClicked,
-    projectsInit,
-    setProjectsInit,
-  } = props;
+  const { project, setIsEdtProjectClicked, projects, setProjects } = props;
   const [isClicked, setIsClicked] = useState(false);
   const [windowSize, setWindowSize] = useState(window.innerWidth);
   const refMemberForm = useRef();
@@ -378,8 +351,8 @@ export const ActionMemberBtns = (props) => {
     let headers = { Authorization: `Token ${auth.token}` };
     lookup("post", `projects/${project.id}/delete/`, {}, headers)
       .then((response) => {
-        setProjectsInit(
-          projectsInit.filter((item) => {
+        setProjects(
+          projects.filter((item) => {
             return item.id !== project.id;
           })
         );
@@ -400,17 +373,15 @@ export const ActionMemberBtns = (props) => {
       lookup("post", "projects/action/", data, headers)
         .then((response) => {
           //setting new array for edit
-          let tmpProjArr = [];
-          for (let i = 0; i < projectsInit.length; i++) {
-            if (projectsInit[i].id === project.id) {
-              let tmpElem = projectsInit[i];
+          let tmpProjArr = projects.map((item) => {
+            if (item.id === project.id) {
+              let tmpElem = item;
               tmpElem.members = response.data.members;
-              tmpProjArr.push(tmpElem);
-            } else {
-              tmpProjArr.push(projectsInit[i]);
+              return tmpElem;
             }
-          }
-          setProjectsInit(tmpProjArr);
+            return item;
+          });
+          setProjects(tmpProjArr);
 
           let alertMessage = "Success!";
           if (response.data.message) {
