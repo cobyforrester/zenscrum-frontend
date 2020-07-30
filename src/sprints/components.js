@@ -90,7 +90,17 @@ export const SprintComponent = ({ match }) => {
 
   return (
     <div>
-      <div className="row justify-content-md-center">
+      <div className="row">
+        <div className="col-12">
+          <button
+            onClick={() => {
+              window.history.back();
+            }}
+            className="arrow-btn mt-3 ml-5"
+          >
+            Back to Projects!
+          </button>
+        </div>
         <div className="col-12 my-3 mx-auto text-center">
           {project.title && !sprintsLoading !== "" ? (
             <>

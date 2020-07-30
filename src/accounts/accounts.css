@@ -54,6 +54,10 @@
   font-weight: 400;
 }
 
+.make-white {
+  color: white !important;
+}
+
 .forgot-password,
 .forgot-password a {
   text-align: right;

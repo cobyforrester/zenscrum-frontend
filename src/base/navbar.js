@@ -17,29 +17,32 @@ export const MyNavbar = () => {
         <Link className="navbar-brand" to="/">
           Scrummy
         </Link>
+        <div className="ml-3 navbar-text"></div>
 
-        <div className="ml-auto" id="navbarText">
+        <div className="ml-auto">
           <span className="navbar-text">
             {!authState ? (
-              <Link className="nav-item" to="/login">
-                Login
-              </Link>
-            ) : null}
-            {!authState ? (
-              <Link className="nav-item ml-3 mr-5" to="/register">
-                Register
-              </Link>
+              <>
+                <Link className="nav-item" to="/login">
+                  Login
+                </Link>
+                <Link className="nav-item ml-3 mr-5" to="/register">
+                  Register
+                </Link>
+              </>
             ) : null}
             {authState ? (
-              <button
-                onClick={() => {
-                  logout(dispatch, authToken, alert);
-                }}
-                type="button"
-                className="logout-btn btn btn-outline-danger font-weight-bold"
-              >
-                Logout {authUser.username}
-              </button>
+              <>
+                <button
+                  onClick={() => {
+                    logout(dispatch, authToken, alert);
+                  }}
+                  type="button"
+                  className="logout-btn btn btn-outline-danger font-weight-bold"
+                >
+                  Logout {authUser.username}
+                </button>
+              </>
             ) : null}
           </span>
         </div>
