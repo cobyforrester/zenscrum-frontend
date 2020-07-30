@@ -78,6 +78,7 @@ export const SprintComponent = ({ match }) => {
           refGoal.current.value = "";
           setIsClickedCreate(false);
           alert.show(`Sprint was successfully created!`, { type: "success" });
+          alert.show(`List automatically sorted`, { type: "success" });
         })
         .catch((error) => {
           console.log(error.response);
@@ -267,11 +268,11 @@ export const Sprint = (props) => {
       lookup("post", `sprints/${sprint.id}/update/`, data, headers)
         .then((response) => {
           alert.show(`Sprint was successfully updated!`, { type: "success" });
-
+          let tmpElem = null;
           //setting new array for edit
-          let tmpProjArr = sprints.map((item) => {
+          let tempNewSprintLst = sprints.map((item) => {
             if (item.id === sprint.id) {
-              let tmpElem = item;
+              tmpElem = item;
               tmpElem.goal = goal;
               tmpElem.start_date = start_date;
               tmpElem.end_date = end_date;
@@ -279,8 +280,26 @@ export const Sprint = (props) => {
             }
             return item;
           });
-          setSprints(tmpProjArr);
+          let tempSprintList2 = tempNewSprintLst.filter((item) => {
+            return item.id !== tmpElem.id;
+          });
+          let added = false;
+          for (let i = 0; i < sprints.length - 1; i++) {
+            if (
+              !added &&
+              isEarlierDate(tmpElem.start_date, tempSprintList2[i].start_date)
+            ) {
+              tempSprintList2.splice(i, 0, tmpElem);
+              added = !added;
+            }
+          }
+          if (!added) {
+            tempSprintList2.push(tmpElem);
+          }
+          //tempNewSprintLst.unshift(response.data); //adds new sprint to total list
+          setSprints(tempSprintList2); //sets new sprints to updated list
           setIsEdtSprintClicked(false);
+          alert.show(`List automatically sorted`, { type: "success" });
         })
         .catch((error) => {
           console.log(error.response);
