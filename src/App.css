@@ -19,6 +19,12 @@
   text-align: left;
 }
 
+.edit-sprint-form {
+  width: 50% !important;
+  max-width: 210px !important;
+  text-align: left;
+}
+
 .date-range-sprints input {
   display: block !important;
   width: 20% !important;

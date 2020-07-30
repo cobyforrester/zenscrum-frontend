@@ -54,11 +54,27 @@ export const SprintComponent = ({ match }) => {
         end_date: end_date,
       };
       let headers = { Authorization: `Token ${auth.token}` };
-      let tempNewSprint = [...sprints];
+      let tempNewSprintLst = [...sprints];
       lookup("post", "sprints/create/", data, headers)
         .then((response) => {
-          tempNewSprint.unshift(response.data); //adds new sprint to total list
-          //setSprints(tempNewSprint); //sets new sprints to updated list
+          let added = false;
+          for (let i = 0; i < sprints.length; i++) {
+            if (
+              !added &&
+              isEarlierDate(
+                response.data.start_date,
+                tempNewSprintLst[i].start_date
+              )
+            ) {
+              tempNewSprintLst.splice(i, 0, response.data);
+              added = !added;
+            }
+          }
+          if (!added) {
+            tempNewSprintLst.push(response.data);
+          }
+          //tempNewSprintLst.unshift(response.data); //adds new sprint to total list
+          setSprints(tempNewSprintLst); //sets new sprints to updated list
           refGoal.current.value = "";
           setIsClickedCreate(false);
           alert.show(`Sprint was successfully created!`, { type: "success" });
@@ -76,7 +92,14 @@ export const SprintComponent = ({ match }) => {
     <div>
       <div className="row justify-content-md-center">
         <div className="col-12 my-3 mx-auto text-center">
-          <h1 className="all-projects-header">All {project.title} Sprints</h1>
+          {project.title && !sprintsLoading !== "" ? (
+            <>
+              <h1 className="all-projects-header">
+                Sprints for "{project.title}"
+              </h1>
+              <p>(Sorted by Start Date, and Auto-Numbered)</p>
+            </>
+          ) : null}
         </div>
       </div>
       <div className="row justify-content-md-center">
@@ -160,7 +183,7 @@ export const SprintComponent = ({ match }) => {
       />
       {!sprintsLoading && sprints.length === 0 && !isClickedCreate ? (
         <h3 className="mt-3 text-center">
-          No Projects? Click on "NEW PROJECT" above to create a new project!
+          No Sprints? Click on "NEW SPRINT" above to create a new sprint!
         </h3>
       ) : null}
     </div>
@@ -179,7 +202,6 @@ export const SprintsList = (props) => {
       .then((response) => {
         setSprints(response.data);
         setSprintsLoading(false);
-        console.log(response.data);
       })
       .catch((error) => {
         console.log(error);
@@ -194,6 +216,7 @@ export const SprintsList = (props) => {
       <Sprint
         projects={sprints}
         setSprints={setSprints}
+        sprints={sprints}
         project={project}
         sprint={item}
         match={match}
@@ -231,7 +254,7 @@ export const Sprint = (props) => {
       };
       let headers = { Authorization: `Token ${authToken}` };
 
-      lookup("post", `projects/${match.params.id}/update/`, data, headers)
+      lookup("post", `sprints/${sprint.id}/update/`, data, headers)
         .then((response) => {
           alert.show(`Sprint was successfully updated!`, { type: "success" });
 
@@ -266,15 +289,41 @@ export const Sprint = (props) => {
             <div className="col-12">
               <h2 className="mt-2">Sprint {index + 1}</h2>
               <div>
-                <em>
-                  {!isEdtSprintClicked ? (
-                    <div>
-                      <span className="site-color">Timeline (PST): </span>
-                      {formatDate(sprint.start_date)} -{" "}
-                      {formatDate(sprint.end_date)}
+                {!isEdtSprintClicked ? (
+                  <>
+                    <em>
+                      <div>
+                        <span className="site-color">Start Date (PST): </span>
+                        {formatDate(sprint.start_date)}
+                      </div>
+                      <div>
+                        <span className="site-color">End Date (PST): </span>
+                        {formatDate(sprint.end_date)}
+                      </div>
+                    </em>
+                  </>
+                ) : (
+                  <div className="edit-sprint-form">
+                    <div className="d-flex">
+                      <div className="mt-2">Start:</div>
+                      <input
+                        type="date"
+                        ref={refStartDate}
+                        className="form-control mx-2 my-1"
+                        defaultValue={sprint.start_date}
+                      ></input>
                     </div>
-                  ) : null}
-                </em>
+                    <div className="d-flex">
+                      <div className="mt-2">End:</div>
+                      <input
+                        type="date"
+                        ref={refEndDate}
+                        className="form-control my-1 ml-3 mr-2"
+                        defaultValue={sprint.end_date}
+                      ></input>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -348,20 +397,12 @@ export const ActionMemberBtns = (props) => {
     setSprints,
     match,
   } = props;
-  const [windowSize, setWindowSize] = useState(window.innerWidth);
   const alert = useAlert();
   const auth = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowSize(window.innerWidth);
-    };
-    window.addEventListener("resize", handleResize);
-  }, []);
-
   const doDelete = () => {
     let headers = { Authorization: `Token ${auth.token}` };
-    lookup("post", `projects/${match.params.id}/delete/`, {}, headers)
+    lookup("post", `sprints/${sprint.id}/delete/`, {}, headers)
       .then((response) => {
         setSprints(
           sprints.filter((item) => {
@@ -465,4 +506,23 @@ const cleanSprintData = (goal, start_date, end_date) => {
     message = "Goal must be 1,000 characters or less!";
   }
   return message;
+};
+
+const isEarlierDate = (date1, date2) => {
+  //returns true if date1 is earlier or equal to date2
+  if (parseInt(date1.slice(0, 4)) > parseInt(date2.slice(0, 4))) {
+    return false;
+  } else if (
+    parseInt(date1.slice(0, 4)) === parseInt(date2.slice(0, 4)) &&
+    parseInt(date1.slice(5, 7)) > parseInt(date2.slice(5, 7))
+  ) {
+    return false;
+  } else if (
+    parseInt(date1.slice(0, 4)) === parseInt(date2.slice(0, 4)) &&
+    parseInt(date1.slice(5, 7)) === parseInt(date2.slice(5, 7)) &&
+    parseInt(date1.slice(8, 10)) > parseInt(date2.slice(8, 10))
+  ) {
+    return false;
+  }
+  return true;
 };
