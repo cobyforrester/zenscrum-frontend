@@ -64,7 +64,7 @@ export const ProjectComponent = () => {
         </div>
       </div>
       <div className="row justify-content-md-center">
-        <div className=" col-12 mb-3 text-center">
+        <div className="col-12 mb-3 text-center">
           <form className="project-create-form" onSubmit={handleSubmit}>
             {isClickedCreate ? (
               <>

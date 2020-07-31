@@ -18,3 +18,37 @@
     -moz-box-shadow: 0 0 2px 5px #07a6d6 !important;
   }
 }
+
+/* TASK STYLING */
+
+$primary-color: #07a6d6;
+$col-bg-color: #07a6d6;
+$col-footer-bg-color: #07a6d6;
+$col-header-bg-color: #07a6d6;
+$col-content-bg-color: #07a6d6;
+
+.custom-column {
+  background-color: $col-bg-color;
+  border: 5px solid $col-bg-color;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.custom-column-header {
+  font-size: 24px;
+  background-color: #07a6d6;
+  color: black;
+  padding: 15px;
+  text-align: center;
+}
+
+.custom-column-content {
+  background-color: $col-content-bg-color;
+  padding: 20px;
+}
+
+.custom-column-footer {
+  background-color: $col-footer-bg-color;
+  padding-top: 20px;
+  text-align: center;
+}

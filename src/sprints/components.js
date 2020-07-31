@@ -21,17 +21,19 @@ export const SprintComponent = ({ match }) => {
   let newDate = new Date(Date.now() + 12096e5).toISOString().slice(0, 10);
 
   useEffect(() => {
-    let headers = { Authorization: `Token ${auth.token}` };
-    lookup("get", `projects/${match.params.id}/`, {}, headers)
-      .then((response) => {
-        setProject(response.data);
-      })
-      .catch((error) => {
-        console.log(error.response);
-        alert.show("Oops! Something went wrong finding sprint!", {
-          type: "error",
+    if (auth.isAuthenticated) {
+      let headers = { Authorization: `Token ${auth.token}` };
+      lookup("get", `projects/${match.params.id}/`, {}, headers)
+        .then((response) => {
+          setProject(response.data);
+        })
+        .catch((error) => {
+          console.log(error.response);
+          alert.show("Oops! Something went wrong finding sprint!", {
+            type: "error",
+          });
         });
-      });
+    }
   }, [auth, alert, setProject, match]);
 
   if (!auth.isAuthenticated) {
@@ -106,7 +108,7 @@ export const SprintComponent = ({ match }) => {
           {project.title && !sprintsLoading !== "" ? (
             <>
               <h1 className="all-projects-header">
-                Sprints for "{project.title}"
+                Sprints For "{project.title}"
               </h1>
               <p>(Sorted by Start Date, and Auto-Numbered)</p>
             </>
@@ -225,7 +227,6 @@ export const SprintsList = (props) => {
   return sprints.map((item, index) => {
     return (
       <Sprint
-        projects={sprints}
         setSprints={setSprints}
         sprints={sprints}
         project={project}
@@ -254,7 +255,11 @@ export const Sprint = (props) => {
     let message = cleanSprintData(goal, start_date, end_date);
     if (message !== "") {
       alert.show(message, { type: "error" });
-    } else if (sprint.goal === goal && sprint.start_date === start_date) {
+    } else if (
+      sprint.goal === goal &&
+      sprint.start_date === start_date &&
+      sprint.end_date === end_date
+    ) {
       alert.show("You didn't change anything!", { type: "error" });
       setIsEdtSprintClicked(false);
     } else {
@@ -382,6 +387,7 @@ export const Sprint = (props) => {
                     sprints={sprints}
                     sprint={sprint}
                     project={project}
+                    index={index}
                     match={match}
                   />
                 </div>
@@ -425,6 +431,7 @@ export const ActionMemberBtns = (props) => {
     sprints,
     setSprints,
     match,
+    index,
   } = props;
   const alert = useAlert();
   const auth = useSelector((state) => state.auth);
@@ -448,7 +455,7 @@ export const ActionMemberBtns = (props) => {
   return (
     <>
       <div className="btn">
-        <Link to={`/sprints/${match.params.id}`}>
+        <Link to={`/tasks/${sprint.id}/${index + 1}`}>
           <button className="brk-btn mx-1">Tasks</button>
         </Link>
         {project.user.username === auth.user.username ? (
