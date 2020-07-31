@@ -150,17 +150,15 @@ export const TaskComponent = ({ match }) => {
           </form>
         </div>
       </div>
-      <div className="container">
-        <div className="row">
-          <TasksList
-            setTasksLoading={setTasksLoading}
-            tasks={tasks}
-            setTasks={setTasks}
-            sprint={sprint}
-            match={match}
-          />
-        </div>
-      </div>
+      <ul className="cards">
+        <TasksList
+          setTasksLoading={setTasksLoading}
+          tasks={tasks}
+          setTasks={setTasks}
+          sprint={sprint}
+          match={match}
+        />
+      </ul>
       {!tasksLoading && tasks.length === 0 && !isClickedCreate ? (
         <h3 className="mt-3 text-center">
           No Tasks? Click on "NEW TASK" above to create a new task!
@@ -193,7 +191,7 @@ export const TasksList = (props) => {
 
   return tasks.map((item, index) => {
     return (
-      <Sprint
+      <Task
         tasks={tasks}
         setTasks={setTasks}
         sprint={sprint}
@@ -205,7 +203,7 @@ export const TasksList = (props) => {
   });
 };
 
-export const Sprint = (props) => {
+export const Task = (props) => {
   const { setTasks, sprint, task, match, tasks } = props;
   const [isEdtTaskClicked, setIsEdtTaskClicked] = useState(false);
   const authToken = useSelector((state) => state.auth.token);
@@ -226,7 +224,7 @@ export const Sprint = (props) => {
       let data = {
         title: title,
         description: description,
-        complete: task.complete,
+        completed: task.completed,
       };
       let headers = { Authorization: `Token ${authToken}` };
 
@@ -259,42 +257,40 @@ export const Sprint = (props) => {
 
   return (
     <>
-      <div className="col-sm-12 col-md-4 my-2">
-        <div className="custom-column rounded ">
-          {!isEdtTaskClicked ? (
-            <>
-              <div className="custom-column-header border-bottom border-dark">
-                {task.title}
-              </div>
-              <div className="custom-column-content">
-                <p>
+      <li className="cards_item">
+        <div className="card">
+          <div className="card_content">
+            {!isEdtTaskClicked ? (
+              <>
+                <h2 className="card_title border-bottom mb-2">{task.title}</h2>
+
+                <p className="card_text">
                   <em>
                     <strong className="text-light">Start Date (PST): </strong>
                     {formatDate(task.start_date)}
                   </em>
                 </p>
-                <p>
+                <p className="card_text">
                   <strong className="text-light">Description: </strong>
                   {task.description}
                 </p>
-              </div>
-            </>
-          ) : (
-            <>
-              <input
-                className="custom-column-header"
-                ref={refTitle}
-                defaultValue={task.title}
-              ></input>
-              <div className="custom-column-content"></div>
-              <textarea
-                className="custom-column-content"
-                ref={refDescription}
-                defaultValue={task.description}
-              ></textarea>
-            </>
-          )}
-          <div className="custom-column-footer">
+              </>
+            ) : (
+              <>
+                <input
+                  className="custom-column-header"
+                  ref={refTitle}
+                  defaultValue={task.title}
+                ></input>
+                <div className="custom-column-content"></div>
+                <textarea
+                  className="custom-column-content"
+                  ref={refDescription}
+                  defaultValue={task.description}
+                ></textarea>
+              </>
+            )}
+
             {!isEdtTaskClicked ? (
               <ActionMemberBtns
                 setIsEdtTaskClicked={setIsEdtTaskClicked}
@@ -324,7 +320,7 @@ export const Sprint = (props) => {
             )}
           </div>
         </div>
-      </div>
+      </li>
     </>
   );
 };
@@ -346,20 +342,39 @@ export const ActionMemberBtns = (props) => {
         alert.show(`Task was successfully updated!`, { type: "success" });
         let tmpElem = null;
         //setting new array for edit
-        let tempTasksLst = tasks.map((item) => {
-          if (item.id === task.id) {
-            tmpElem = item;
-            tmpElem.completed = !task.completed;
-            return tmpElem;
+        let tempTasksLst = tasks
+          .map((item) => {
+            if (item.id === task.id) {
+              tmpElem = item;
+              tmpElem.completed = response.data.completed;
+              return tmpElem;
+            }
+            return item;
+          })
+          .filter((item) => {
+            return item.id !== tmpElem.id;
+          });
+        let added = false;
+        for (let i = 0; i < tasks.length - 1; i++) {
+          let bool =
+            isEarlierDate(tempTasksLst[i].start_date, tmpElem.start_date) &&
+            tempTasksLst[i].completed === tmpElem.completed;
+          if (bool || (tempTasksLst[i].completed && !tmpElem.completed)) {
+            if (!added) {
+              tempTasksLst.splice(i, 0, tmpElem);
+              added = !added;
+            }
           }
-          return item;
-        });
+        }
+        if (!added) {
+          tempTasksLst.push(tmpElem);
+        }
         //tempNewSprintLst.unshift(response.data); //adds new sprint to total list
         setTasks(tempTasksLst); //sets new sprints to updated list
         alert.show(`List automatically sorted`, { type: "success" });
       })
       .catch((error) => {
-        console.log(error.response);
+        console.log(error);
         alert.show("Oops! Something went wrong updating!", {
           type: "error",
         });
@@ -384,7 +399,6 @@ export const ActionMemberBtns = (props) => {
 
   return (
     <>
-      <h1>{task.completed.toString()}</h1>
       <div className="btn">
         <button
           onClick={() => {
@@ -414,7 +428,7 @@ export const ActionMemberBtns = (props) => {
             handleCheck();
           }}
         />
-        <label className="form-check-label">Completed</label>
+        <label className="form-check-label text-light">Completed</label>
       </div>
     </>
   );

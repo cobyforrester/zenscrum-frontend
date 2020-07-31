@@ -21,34 +21,66 @@
 
 /* TASK STYLING */
 
-$primary-color: #07a6d6;
-$col-bg-color: #07a6d6;
-$col-footer-bg-color: #07a6d6;
-$col-header-bg-color: #07a6d6;
-$col-content-bg-color: #07a6d6;
-
-.custom-column {
-  background-color: $col-bg-color;
-  border: 5px solid $col-bg-color;
-  padding: 20px;
-  box-sizing: border-box;
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  justify-content: center;
 }
 
-.custom-column-header {
-  font-size: 24px;
-  background-color: #07a6d6;
-  color: black;
-  padding: 15px;
-  text-align: center;
+.cards_item {
+  display: flex;
+  padding: 1rem;
+  max-width: 420px;
 }
 
-.custom-column-content {
-  background-color: $col-content-bg-color;
-  padding: 20px;
+@media (min-width: 40rem) {
+  .cards_item {
+    width: 50%;
+  }
 }
 
-.custom-column-footer {
-  background-color: $col-footer-bg-color;
-  padding-top: 20px;
+@media (min-width: 56rem) {
+  .cards_item {
+    width: 33.3333%;
+  }
+}
+
+.card {
+  background-color: white;
+  border-radius: 0.25rem;
+  box-shadow: 0 20px 40px -14px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.card_content {
+  padding: 1rem;
+  background: linear-gradient(to bottom left, #1786a8 40%, #07a6d6 100%);
+}
+
+.card_title {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: capitalize;
+  margin: 0px;
+}
+
+.card_text {
+  color: #ffffff;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+  font-weight: 400;
+}
+.made_by {
+  font-weight: 400;
+  font-size: 13px;
+  margin-top: 35px;
   text-align: center;
 }
