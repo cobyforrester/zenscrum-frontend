@@ -31,6 +31,8 @@ export const Login = () => {
       <div className="auth-inner">
         <form onSubmit={clickSubmit}>
           <h3>Sign In</h3>
+          <p className="text-center mb-0">Login didn't work?</p>
+          <p className="text-center mt-0">Try submitting credentials twice</p>
           <div className="form-group">
             <label>Username</label>
             <input
