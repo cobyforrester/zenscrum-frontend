@@ -514,7 +514,7 @@ const formatDate = (date) => {
     "12": "December",
   };
   if (day[0] === "0") {
-    day = day.split(1);
+    day = day.slice(1);
   }
   if (day === "1") {
     day = day + "st";
