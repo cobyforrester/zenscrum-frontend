@@ -12,6 +12,21 @@
   text-align: left;
 }
 
+.task-update-form textarea,
+.task-update-form input {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 450px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: left;
+}
+
+.task-update-form textarea {
+  margin-top: 20px;
+}
+
 .sprint-form-create {
   display: block !important;
   width: 50% !important;

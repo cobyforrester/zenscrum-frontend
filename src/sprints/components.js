@@ -23,7 +23,7 @@ export const SprintComponent = ({ match }) => {
   useEffect(() => {
     if (auth.isAuthenticated) {
       let headers = { Authorization: `Token ${auth.token}` };
-      lookup("get", `projects/${match.params.id}/`, {}, headers)
+      lookup("get", `projects/${match.params.project_id}/`, {}, headers)
         .then((response) => {
           setProject(response.data);
         })
@@ -51,7 +51,7 @@ export const SprintComponent = ({ match }) => {
     } else {
       const data = {
         goal: goal,
-        project: match.params.id,
+        project: match.params.project_id,
         start_date: start_date,
         end_date: end_date,
       };
@@ -110,7 +110,7 @@ export const SprintComponent = ({ match }) => {
               <h1 className="all-projects-header">
                 Sprints For "{project.title}"
               </h1>
-              <p>(Sorted by Start Date, and Auto-Numbered)</p>
+              <p>(Sorted by start date, and auto-numbered)</p>
             </>
           ) : null}
         </div>
@@ -211,7 +211,7 @@ export const SprintsList = (props) => {
 
   useEffect(() => {
     let headers = { Authorization: `Token ${authToken}` };
-    lookup("get", `sprints/${match.params.id}/`, {}, headers)
+    lookup("get", `sprints/${match.params.project_id}/`, {}, headers)
       .then((response) => {
         setSprints(response.data);
         setSprintsLoading(false);
@@ -231,7 +231,6 @@ export const SprintsList = (props) => {
         sprints={sprints}
         project={project}
         sprint={item}
-        match={match}
         key={`${index}-item-sprint.id`}
         index={index}
       />
@@ -240,7 +239,7 @@ export const SprintsList = (props) => {
 };
 
 export const Sprint = (props) => {
-  const { setSprints, sprints, sprint, match, index, project } = props;
+  const { setSprints, sprints, sprint, index, project } = props;
   const [isEdtSprintClicked, setIsEdtSprintClicked] = useState(false);
   const authToken = useSelector((state) => state.auth.token);
   const refGoal = useRef();
@@ -388,7 +387,6 @@ export const Sprint = (props) => {
                     sprint={sprint}
                     project={project}
                     index={index}
-                    match={match}
                   />
                 </div>
               </>
@@ -430,7 +428,6 @@ export const ActionMemberBtns = (props) => {
     setIsEdtSprintClicked,
     sprints,
     setSprints,
-    match,
     index,
   } = props;
   const alert = useAlert();

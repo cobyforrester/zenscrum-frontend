@@ -21,7 +21,11 @@ function App() {
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/" component={ProjectComponent} />
-            <Route exact path="/sprints/:id" component={SprintComponent} />
+            <Route
+              exact
+              path="/sprints/:project_id"
+              component={SprintComponent}
+            />
             {/* ID ABOVE IS ID FOR CORRESPONDING PROJECT */}
             <Route
               exact

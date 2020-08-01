@@ -49,7 +49,7 @@
 }
 
 .card {
-  background-color: white;
+  background: linear-gradient(to bottom left, #1786a8 40%, #07a6d6 100%);
   border-radius: 0.25rem;
   box-shadow: 0 20px 40px -14px rgba(0, 0, 0, 0.25);
   display: flex;
@@ -59,7 +59,6 @@
 
 .card_content {
   padding: 1rem;
-  background: linear-gradient(to bottom left, #1786a8 40%, #07a6d6 100%);
 }
 
 .card_title {
@@ -83,4 +82,8 @@
   font-size: 13px;
   margin-top: 35px;
   text-align: center;
+}
+
+.card-color {
+  background: grey !important;
 }

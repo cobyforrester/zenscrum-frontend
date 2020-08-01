@@ -8,30 +8,12 @@ import { Redirect } from "react-router-dom";
 export const TaskComponent = ({ match }) => {
   //match id is sprint id in match.params.id
   const [tasks, setTasks] = useState([]);
-  const [sprint, setSprint] = useState([]); //setting for if doesnt load
   const refTitle = useRef();
   const refDescription = useRef();
   const [isClickedCreate, setIsClickedCreate] = useState(false);
   const alert = useAlert();
   const auth = useSelector((state) => state.auth);
   const [tasksLoading, setTasksLoading] = useState(true);
-
-  useEffect(() => {
-    if (auth.isAuthenticated) {
-      let headers = { Authorization: `Token ${auth.token}` };
-      lookup("get", `sprints/${match.params.sprint_id}/details/`, {}, headers)
-        .then((response) => {
-          setSprint(response.data);
-        })
-        .catch((error) => {
-          console.log(error.response);
-          alert.show("Oops! Something went wrong finding sprint!", {
-            type: "error",
-          });
-        });
-    }
-  }, [auth, alert, setSprint, match]);
-
   if (!auth.isAuthenticated) {
     return <Redirect to="/login" />;
   }
@@ -53,13 +35,24 @@ export const TaskComponent = ({ match }) => {
       let tempNewSprintLst = [...tasks];
       lookup("post", "tasks/create/", data, headers)
         .then((response) => {
-          tempNewSprintLst.unshift(response.data);
-
+          let added = false;
+          for (let i = 0; i < tasks.length; i++) {
+            if (!added && tempNewSprintLst[i].completed) {
+              if (!added) {
+                tempNewSprintLst.splice(i, 0, response.data);
+                added = !added;
+              }
+            }
+          }
+          if (!added) {
+            tempNewSprintLst.push(response.data);
+          }
           setTasks(tempNewSprintLst); //sets new sprints to updated list
           refTitle.current.value = "";
           refDescription.current.value = "";
           setIsClickedCreate(false);
           alert.show(`Task was successfully created!`, { type: "success" });
+          alert.show(`List automatically sorted`, { type: "success" });
         })
         .catch((error) => {
           console.log(error.response);
@@ -87,6 +80,7 @@ export const TaskComponent = ({ match }) => {
           <h1 className="all-projects-header">
             Tasks For Sprint {match.params.sprint_num}
           </h1>
+          <p>(Sorted by completeness, then most recent date first)</p>
         </div>
       </div>
       <div className="row justify-content-md-center">
@@ -155,7 +149,6 @@ export const TaskComponent = ({ match }) => {
           setTasksLoading={setTasksLoading}
           tasks={tasks}
           setTasks={setTasks}
-          sprint={sprint}
           match={match}
         />
       </ul>
@@ -170,7 +163,7 @@ export const TaskComponent = ({ match }) => {
 
 // All Below for box view
 export const TasksList = (props) => {
-  const { setTasks, tasks, setTasksLoading, sprint, match } = props;
+  const { setTasks, tasks, setTasksLoading, match } = props;
   const alert = useAlert();
   const authToken = useSelector((state) => state.auth.token);
 
@@ -194,9 +187,7 @@ export const TasksList = (props) => {
       <Task
         tasks={tasks}
         setTasks={setTasks}
-        sprint={sprint}
         task={item}
-        match={match}
         key={`${index}-item-sprint.id`}
       />
     );
@@ -204,12 +195,16 @@ export const TasksList = (props) => {
 };
 
 export const Task = (props) => {
-  const { setTasks, sprint, task, match, tasks } = props;
+  const { setTasks, task, tasks } = props;
   const [isEdtTaskClicked, setIsEdtTaskClicked] = useState(false);
   const authToken = useSelector((state) => state.auth.token);
   const refTitle = useRef();
   const refDescription = useRef();
   const alert = useAlert();
+  let cardColor = "";
+  if (task.completed) {
+    cardColor = "card-color";
+  }
 
   const onTaskEdtClick = () => {
     let title = refTitle.current.value;
@@ -259,7 +254,7 @@ export const Task = (props) => {
     <>
       <li className="cards_item">
         <div className="card">
-          <div className="card_content">
+          <div className={`card_content ${cardColor}`}>
             {!isEdtTaskClicked ? (
               <>
                 <h2 className="card_title border-bottom mb-2">{task.title}</h2>
@@ -277,17 +272,18 @@ export const Task = (props) => {
               </>
             ) : (
               <>
-                <input
-                  className="custom-column-header"
-                  ref={refTitle}
-                  defaultValue={task.title}
-                ></input>
-                <div className="custom-column-content"></div>
-                <textarea
-                  className="custom-column-content"
-                  ref={refDescription}
-                  defaultValue={task.description}
-                ></textarea>
+                <div className="task-update-form">
+                  <input
+                    className="custom-column-header"
+                    ref={refTitle}
+                    defaultValue={task.title}
+                  ></input>
+                  <textarea
+                    className="custom-column-content"
+                    ref={refDescription}
+                    defaultValue={task.description}
+                  ></textarea>
+                </div>
               </>
             )}
 
@@ -326,7 +322,7 @@ export const Task = (props) => {
 };
 
 export const ActionMemberBtns = (props) => {
-  const { sprint, task, setIsEdtTaskClicked, tasks, setTasks, match } = props;
+  const { task, setIsEdtTaskClicked, tasks, setTasks } = props;
   const alert = useAlert();
   const auth = useSelector((state) => state.auth);
 
@@ -340,7 +336,7 @@ export const ActionMemberBtns = (props) => {
     lookup("post", `tasks/${task.id}/update/`, data, headers)
       .then((response) => {
         alert.show(`Task was successfully updated!`, { type: "success" });
-        let tmpElem = null;
+        let tmpElem = response;
         //setting new array for edit
         let tempTasksLst = tasks
           .map((item) => {
@@ -357,7 +353,7 @@ export const ActionMemberBtns = (props) => {
         let added = false;
         for (let i = 0; i < tasks.length - 1; i++) {
           let bool =
-            isEarlierDate(tempTasksLst[i].start_date, tmpElem.start_date) &&
+            isEarlierDate(tmpElem.start_date, tempTasksLst[i].start_date) &&
             tempTasksLst[i].completed === tmpElem.completed;
           if (bool || (tempTasksLst[i].completed && !tmpElem.completed)) {
             if (!added) {

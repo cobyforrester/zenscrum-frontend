@@ -77,18 +77,17 @@ export const register = (user, dispatch, alert) => {
   ) {
     alert.show("Error no field can be empty!", { type: "error" });
   } else if (
-    user.first_name.length < 3 ||
-    user.last_name.length < 3 ||
-    user.username.length < 3 ||
-    user.email.length < 3 ||
-    user.password.length < 3
+    user.first_name.length < 2 ||
+    user.last_name.length < 2 ||
+    user.username.length < 2 ||
+    user.email.length < 2 ||
+    user.password.length < 2
   ) {
-    alert.show("No field can be less than 3 charcters!", { type: "error" });
+    alert.show("No field can be less than 2 charcters!", { type: "error" });
   } else if (
     !user.first_name.match(/^[0-9A-Za-z]+$/) ||
     !user.last_name.match(/^[0-9A-Za-z]+$/) ||
-    !user.username.match(/^[0-9A-Za-z]+$/) ||
-    !user.password.match(/^[0-9A-Za-z]+$/)
+    !user.username.match(/^[0-9A-Za-z]+$/)
   ) {
     alert.show("Field can only contain letters and numbers!", {
       type: "error",
@@ -134,12 +133,12 @@ export const register = (user, dispatch, alert) => {
               type: "error",
             });
           } else {
-            alert.show("Looks lika an something went wrong!", {
+            alert.show("Oops! something went wrong!", {
               type: "error",
             });
           }
         } else {
-          alert.show("Looks lika an something went wrong!", {
+          alert.show("Oops! something went wrong!", {
             type: "error",
           });
         }
