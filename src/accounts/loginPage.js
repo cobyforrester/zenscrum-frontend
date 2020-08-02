@@ -3,7 +3,6 @@ import { Link, Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { login } from "../actions";
 import { useAlert } from "react-alert";
-import { sha256 } from "./sha256";
 import "./accounts.css";
 
 export const Login = () => {
@@ -17,10 +16,11 @@ export const Login = () => {
     return <Redirect to="/" />;
   }
 
-  const clickSubmit = () => {
+  const clickSubmit = (event) => {
+    event.preventDefault();
     login(
-      refUsername.current.value,
-      sha256(refPassword.current.value), //hashing password so it cannot be seen
+      refUsername,
+      refPassword, //hashing password so it cannot be seen
       dispatch,
       alert
     );
@@ -29,7 +29,7 @@ export const Login = () => {
   return (
     <div className="auth-wrapper">
       <div className="auth-inner">
-        <form onSubmit={clickSubmit}>
+        <form>
           <h3>Sign In</h3>
           <p className="text-center mb-0">Login didn't work?</p>
           <p className="text-center mt-0">Try submitting credentials twice</p>
@@ -55,7 +55,7 @@ export const Login = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-secondary btn-block">
+          <button onClick={clickSubmit} className="btn btn-secondary btn-block">
             Submit
           </button>
           <p className="forgot-password text-right">

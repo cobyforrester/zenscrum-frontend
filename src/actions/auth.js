@@ -1,4 +1,5 @@
 import { lookup } from "../lookup";
+import { sha256 } from "../accounts";
 
 // CHECK TOKEN & LOAD USER
 export const isAuthenticated = (dispatch, token) => {
@@ -19,8 +20,10 @@ export const isAuthenticated = (dispatch, token) => {
 };
 
 // LOGIN USER
-export const login = (username, password, dispatch, alert) => {
-  if (!username || !password) {
+export const login = (refUsername, refPassword, dispatch, alert) => {
+  let username = refUsername.current.value;
+  let password = sha256(refPassword.current.value);
+  if (!username || !refPassword.current.value) {
     alert.show("Error no field can be empty", { type: "error" });
   } else {
     // Headers

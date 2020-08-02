@@ -20,7 +20,8 @@ export const Register = () => {
     return <Redirect to="/" />;
   }
 
-  const clickSubmit = () => {
+  const clickSubmit = (event) => {
+    event.preventDefault();
     let user = {
       username: refUsername.current.value,
       first_name: refFN.current.value,
@@ -28,13 +29,17 @@ export const Register = () => {
       email: refEmail.current.value,
       password: sha256(refPassword.current.value),
     };
-    register(user, dispatch, alert);
+    if (refPassword.current.value) {
+      register(user, dispatch, alert);
+    } else {
+      alert.show("Password cannot be empty!", { type: "error" });
+    }
   };
 
   return (
     <div className="auth-wrapper">
       <div className="auth-inner">
-        <form onSubmit={clickSubmit}>
+        <form>
           <h3>Sign Up</h3>
 
           <div className="form-group">
@@ -92,7 +97,7 @@ export const Register = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-secondary btn-block">
+          <button onClick={clickSubmit} className="btn btn-secondary btn-block">
             Sign Up
           </button>
           <p className="forgot-password text-right">
