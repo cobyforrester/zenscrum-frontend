@@ -15,7 +15,7 @@ export const MyNavbar = () => {
     <>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <Link className="navbar-brand" to="/">
-          Scrummy
+          ZenScrum
         </Link>
         <div className="ml-3 navbar-text"></div>
 
