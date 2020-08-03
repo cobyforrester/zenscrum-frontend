@@ -71,20 +71,13 @@ export const register = (user, dispatch, alert) => {
     "Content-Type": "application/json",
   };
 
-  if (
-    !user.first_name ||
-    !user.last_name ||
-    !user.username ||
-    !user.email ||
-    !user.password
-  ) {
+  if (!user.first_name || !user.last_name || !user.username || !user.email) {
     alert.show("Error no field can be empty!", { type: "error" });
   } else if (
     user.first_name.length < 2 ||
     user.last_name.length < 2 ||
     user.username.length < 2 ||
-    user.email.length < 2 ||
-    user.password.length < 2
+    user.email.length < 2
   ) {
     alert.show("No field can be less than 2 charcters!", { type: "error" });
   } else if (

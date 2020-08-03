@@ -18,21 +18,36 @@ export const Login = () => {
 
   const clickSubmit = (event) => {
     event.preventDefault();
-    login(
-      refUsername,
-      refPassword, //hashing password so it cannot be seen
-      dispatch,
-      alert
-    );
+    let password = refPassword.current.value;
+    let isUnicode = true;
+    for (var i = 0, n = password.length; i < n; i++) {
+      if (password.charCodeAt(i) > 255) {
+        isUnicode = false;
+      }
+    }
+
+    if (!isUnicode) {
+      alert.show("Password must be unicode characters!", { type: "error" });
+    } else if (!password) {
+      alert.show("No field can be blank", { type: "error" });
+    } else {
+      login(
+        refUsername,
+        refPassword, //hashing password so it cannot be seen
+        dispatch,
+        alert
+      );
+    }
   };
 
   return (
     <div className="auth-wrapper">
       <div className="auth-inner">
         <form>
-          <h3>Sign In</h3>
-          <p className="text-center mb-0">Login didn't work?</p>
-          <p className="text-center mt-0">Try submitting credentials twice</p>
+          <h3 className="mb-0">Sign In</h3>
+          <p className="text-center mt-0 mb-2">
+            (Sign in may take a few seconds)
+          </p>
           <div className="form-group">
             <label>Username</label>
             <input

@@ -22,17 +22,30 @@ export const Register = () => {
 
   const clickSubmit = (event) => {
     event.preventDefault();
+    let password = refPassword.current.value;
     let user = {
       username: refUsername.current.value,
       first_name: refFN.current.value,
       last_name: refLN.current.value,
       email: refEmail.current.value,
-      password: sha256(refPassword.current.value),
+      password: sha256(password),
     };
-    if (refPassword.current.value) {
-      register(user, dispatch, alert);
+
+    let isUnicode = true;
+    for (var i = 0, n = password.length; i < n; i++) {
+      if (password.charCodeAt(i) > 255) {
+        isUnicode = false;
+      }
+    }
+
+    if (!isUnicode) {
+      alert.show("Password must be unicode characters", { type: "error" });
+    } else if (password.length < 2) {
+      alert.show("Password must be greater than 1 character", {
+        type: "error",
+      });
     } else {
-      alert.show("Password cannot be empty!", { type: "error" });
+      register(user, dispatch, alert);
     }
   };
 
@@ -41,6 +54,9 @@ export const Register = () => {
       <div className="auth-inner">
         <form>
           <h3>Sign Up</h3>
+          <p className="text-center mt-0 mb-2">
+            (Sign Up may take a few seconds)
+          </p>
 
           <div className="form-group">
             <label>First name</label>
