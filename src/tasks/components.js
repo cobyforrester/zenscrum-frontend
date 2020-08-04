@@ -169,19 +169,19 @@ export const TasksList = (props) => {
   const authToken = useSelector((state) => state.auth.token);
 
   useEffect(() => {
-    if(auth.isAuthenticated) {
-    let headers = { Authorization: `Token ${authToken}` };
-    lookup("get", `tasks/${match.params.sprint_id}/`, {}, headers)
-      .then((response) => {
-        setTasks(response.data);
-        setTasksLoading(false);
-      })
-      .catch((error) => {
-        console.log(error);
-        alert.show("Database Error: Trouble loading tasks", {
-          type: "error",
+    if (auth.isAuthenticated) {
+      let headers = { Authorization: `Token ${authToken}` };
+      lookup("get", `tasks/${match.params.sprint_id}/`, {}, headers)
+        .then((response) => {
+          setTasks(response.data);
+          setTasksLoading(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          alert.show("Database Error: Trouble loading tasks", {
+            type: "error",
+          });
         });
-      });
     }
   }, [alert, authToken, setTasks, setTasksLoading, match, auth]);
 
@@ -256,8 +256,8 @@ export const Task = (props) => {
   return (
     <>
       <li className="cards_item">
-        <div className="card">
-          <div className={`card_content ${cardColor}`}>
+        <div className={`card ${cardColor}`}>
+          <div className="card_content">
             {!isEdtTaskClicked ? (
               <>
                 <h2 className="card_title border-bottom mb-2">{task.title}</h2>
