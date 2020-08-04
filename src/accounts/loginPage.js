@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { login } from "../actions";
@@ -11,6 +11,7 @@ export const Login = () => {
   const alert = useAlert();
   const refUsername = useRef();
   const refPassword = useRef();
+  const [isLoading, setIsLoading] = useState(false);
 
   if (tmpAuthState) {
     return <Redirect to="/" />;
@@ -31,11 +32,13 @@ export const Login = () => {
     } else if (!password) {
       alert.show("No field can be blank", { type: "error" });
     } else {
+      setIsLoading(true);
       login(
         refUsername,
         refPassword, //hashing password so it cannot be seen
         dispatch,
-        alert
+        alert,
+        setIsLoading
       );
     }
   };
@@ -69,10 +72,19 @@ export const Login = () => {
               placeholder="Enter password"
             />
           </div>
-
-          <button onClick={clickSubmit} className="btn btn-secondary btn-block">
-            Submit
-          </button>
+          {!isLoading ? (
+            <button
+              onClick={clickSubmit}
+              className="btn btn-secondary btn-block"
+            >
+              Submit
+            </button>
+          ) : (
+            <button className="btn btn-secondary btn-block">
+              <span className="spinner-border spinner-border-sm"></span>{" "}
+              Loading...
+            </button>
+          )}
           <p className="forgot-password text-right">
             No account? <Link to="/register">Sign-up here</Link>
           </p>

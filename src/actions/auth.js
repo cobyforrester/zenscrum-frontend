@@ -20,7 +20,13 @@ export const isAuthenticated = (dispatch, token) => {
 };
 
 // LOGIN USER
-export const login = (refUsername, refPassword, dispatch, alert) => {
+export const login = (
+  refUsername,
+  refPassword,
+  dispatch,
+  alert,
+  setIsLoading
+) => {
   let username = refUsername.current.value;
   let password = sha256(refPassword.current.value);
   if (!username || !refPassword.current.value) {
@@ -36,6 +42,7 @@ export const login = (refUsername, refPassword, dispatch, alert) => {
 
     lookup("post", "auth/login/", data, headers)
       .then((response) => {
+        setIsLoading(false);
         dispatch({
           type: "LOGIN_SUCCESS",
           payload: response.data,
@@ -45,6 +52,7 @@ export const login = (refUsername, refPassword, dispatch, alert) => {
         });
       })
       .catch((error) => {
+        setIsLoading(false);
         if (
           error &&
           error.response &&
@@ -65,7 +73,7 @@ export const login = (refUsername, refPassword, dispatch, alert) => {
 };
 
 // REGISTER USER
-export const register = (user, dispatch, alert) => {
+export const register = (user, dispatch, alert, setIsLoading) => {
   // Headers
   let headers = {
     "Content-Type": "application/json",
@@ -106,6 +114,7 @@ export const register = (user, dispatch, alert) => {
 
     lookup("post", "auth/register/", data, headers)
       .then((res) => {
+        setIsLoading(false);
         dispatch({
           type: "REGISTER_SUCCESS",
           payload: res.data,
@@ -115,7 +124,7 @@ export const register = (user, dispatch, alert) => {
         });
       })
       .catch((err) => {
-        //console.log(err.response.data, err.response.data.email[0]);
+        setIsLoading(false);
         if (err && err.response && err.response.data) {
           if (err.response.data.email && err.response.data.email[0]) {
             alert.show(err.response.data.email[0], {

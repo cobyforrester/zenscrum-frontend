@@ -150,6 +150,7 @@ export const TaskComponent = ({ match }) => {
           tasks={tasks}
           setTasks={setTasks}
           match={match}
+          auth={auth}
         />
       </ul>
       {!tasksLoading && tasks.length === 0 && !isClickedCreate ? (
@@ -163,11 +164,12 @@ export const TaskComponent = ({ match }) => {
 
 // All Below for box view
 export const TasksList = (props) => {
-  const { setTasks, tasks, setTasksLoading, match } = props;
+  const { setTasks, tasks, setTasksLoading, match, auth } = props;
   const alert = useAlert();
   const authToken = useSelector((state) => state.auth.token);
 
   useEffect(() => {
+    if(auth.isAuthenticated) {
     let headers = { Authorization: `Token ${authToken}` };
     lookup("get", `tasks/${match.params.sprint_id}/`, {}, headers)
       .then((response) => {
@@ -180,7 +182,8 @@ export const TasksList = (props) => {
           type: "error",
         });
       });
-  }, [alert, authToken, setTasks, setTasksLoading, match]);
+    }
+  }, [alert, authToken, setTasks, setTasksLoading, match, auth]);
 
   return tasks.map((item, index) => {
     return (

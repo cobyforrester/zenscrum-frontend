@@ -128,6 +128,7 @@ export const ProjectComponent = () => {
         setProjectsLoading={setProjectsLoading}
         projects={projects}
         setProjects={setProjects}
+        auth={auth}
       />
       {!projectsLoading && projects.length === 0 && !isClickedCreate ? (
         <h3 className="mt-3 text-center">
@@ -140,11 +141,12 @@ export const ProjectComponent = () => {
 
 // All Below for box view
 export const ProjectsList = (props) => {
-  const { setProjects, projects, setProjectsLoading } = props;
+  const { setProjects, projects, setProjectsLoading, auth } = props;
   const alert = useAlert();
   const authToken = useSelector((state) => state.auth.token);
 
   useEffect(() => {
+    if(auth.isAuthenticated) {
     let headers = { Authorization: `Token ${authToken}` };
     lookup("get", "projects/", {}, headers)
       .then((response) => {
@@ -157,7 +159,8 @@ export const ProjectsList = (props) => {
           type: "error",
         });
       });
-  }, [alert, authToken, setProjects, setProjectsLoading]);
+    }
+  }, [alert, authToken, setProjects, setProjectsLoading, auth]);
 
   return projects.map((item, index) => {
     return (

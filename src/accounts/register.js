@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { register } from "../actions";
 import { useAlert } from "react-alert";
@@ -15,6 +15,7 @@ export const Register = () => {
   const refUsername = useRef();
   const refEmail = useRef();
   const refPassword = useRef();
+  const [isLoading, setIsLoading] = useState(false);
 
   if (tmpAuthState) {
     return <Redirect to="/" />;
@@ -45,7 +46,8 @@ export const Register = () => {
         type: "error",
       });
     } else {
-      register(user, dispatch, alert);
+      setIsLoading(true);
+      register(user, dispatch, alert, setIsLoading);
     }
   };
 
@@ -112,10 +114,19 @@ export const Register = () => {
               placeholder="Enter password"
             />
           </div>
-
-          <button onClick={clickSubmit} className="btn btn-secondary btn-block">
-            Sign Up
-          </button>
+          {!isLoading ? (
+            <button
+              onClick={clickSubmit}
+              className="btn btn-secondary btn-block"
+            >
+              Sign Up
+            </button>
+          ) : (
+            <button className="btn btn-secondary btn-block">
+              <span className="spinner-border spinner-border-sm"></span>{" "}
+              Loading...
+            </button>
+          )}
           <p className="forgot-password text-right">
             Already registered? <Link to="/login">Sign-in here</Link>
           </p>

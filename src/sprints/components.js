@@ -193,6 +193,7 @@ export const SprintComponent = ({ match }) => {
         setSprints={setSprints}
         project={project}
         match={match}
+        auth={auth}
       />
       {!sprintsLoading && sprints.length === 0 && !isClickedCreate ? (
         <h3 className="mt-3 text-center">
@@ -205,11 +206,12 @@ export const SprintComponent = ({ match }) => {
 
 // All Below for box view
 export const SprintsList = (props) => {
-  const { setSprints, sprints, setSprintsLoading, project, match } = props;
+  const { setSprints, sprints, setSprintsLoading, project, match, auth } = props;
   const alert = useAlert();
   const authToken = useSelector((state) => state.auth.token);
 
   useEffect(() => {
+    if(auth.isAuthenticated) {
     let headers = { Authorization: `Token ${authToken}` };
     lookup("get", `sprints/${match.params.project_id}/`, {}, headers)
       .then((response) => {
@@ -222,7 +224,8 @@ export const SprintsList = (props) => {
           type: "error",
         });
       });
-  }, [alert, authToken, setSprints, setSprintsLoading, match]);
+    }
+  }, [alert, authToken, setSprints, setSprintsLoading, match, auth]);
 
   return sprints.map((item, index) => {
     return (
