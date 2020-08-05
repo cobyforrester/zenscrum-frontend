@@ -32,22 +32,22 @@ export const TaskComponent = ({ match }) => {
         description: description,
       };
       let headers = { Authorization: `Token ${auth.token}` };
-      let tempNewSprintLst = [...tasks];
+      let tempNewTaskLst = [...tasks];
       lookup("post", "tasks/create/", data, headers)
         .then((response) => {
           let added = false;
           for (let i = 0; i < tasks.length; i++) {
-            if (!added && tempNewSprintLst[i].completed) {
+            if (!added && tempNewTaskLst[i].completed) {
               if (!added) {
-                tempNewSprintLst.splice(i, 0, response.data);
+                tempNewTaskLst.splice(i, 0, response.data);
                 added = !added;
               }
             }
           }
           if (!added) {
-            tempNewSprintLst.push(response.data);
+            tempNewTaskLst.push(response.data);
           }
-          setTasks(tempNewSprintLst); //sets new sprints to updated list
+          setTasks(tempNewTaskLst); //sets new tasks to updated list
           refTitle.current.value = "";
           refDescription.current.value = "";
           setIsClickedCreate(false);
@@ -389,7 +389,7 @@ export const ActionMemberBtns = (props) => {
             return item.id !== task.id;
           })
         );
-        alert.show("Sprint successfully deleted!", { type: "success" });
+        alert.show("Task successfully deleted!", { type: "success" });
       })
       .catch((error) => {
         alert.show("Oops! something went wrong!", { type: "error" });
@@ -410,7 +410,7 @@ export const ActionMemberBtns = (props) => {
         <button
           onClick={() => {
             window.confirm(
-              "Are you sure you wish to delete this Sprint?\n This cannot be undone."
+              "Are you sure you wish to delete this Task?\n This cannot be undone."
             ) && doDelete();
           }}
           className="btn btn-dark mx-1"
