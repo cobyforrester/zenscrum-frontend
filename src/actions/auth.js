@@ -32,6 +32,11 @@ export const login = (
   if (!username || !refPassword.current.value) {
     alert.show("Error no field can be empty", { type: "error" });
   } else {
+    alert.show("Sleeping servers may need a few seconds to wake up!", {
+      timeout: 3500,
+      type: "info",
+    });
+
     // Headers
     let headers = {
       "Content-Type": "application/json",
@@ -97,6 +102,11 @@ export const register = (user, dispatch, alert, setIsLoading) => {
       type: "error",
     });
   } else {
+    alert.show("Sleeping servers may need a few seconds to wake up!", {
+      timeout: 3500,
+      type: "info",
+    });
+
     //capitalize first and last name
     const first_name =
       user.first_name.charAt(0).toUpperCase() + user.first_name.slice(1);
