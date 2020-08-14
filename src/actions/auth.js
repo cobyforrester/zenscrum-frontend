@@ -33,7 +33,7 @@ export const login = (
     alert.show("Error no field can be empty", { type: "error" });
   } else {
     alert.show("Sleeping servers may need a few seconds to wake up!", {
-      timeout: 3500,
+      timeout: 5500,
       type: "info",
     });
 
@@ -103,7 +103,7 @@ export const register = (user, dispatch, alert, setIsLoading) => {
     });
   } else {
     alert.show("Sleeping servers may need a few seconds to wake up!", {
-      timeout: 3500,
+      timeout: 5500,
       type: "info",
     });
 
