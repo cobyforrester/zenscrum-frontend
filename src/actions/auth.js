@@ -103,7 +103,7 @@ export const register = (user, dispatch, alert, setIsLoading) => {
     });
   } else {
     alert.show("Sleeping servers may need a few seconds to wake up!", {
-      timeout: 5500,
+      timeout: 3500,
       type: "info",
     });
 

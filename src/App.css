@@ -1,92 +1,36 @@
-.project-input {
-  padding: 10px;
+/* =========== GENERAL STYLING =========== */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.project-create-form textarea,
-.project-create-form input {
-  display: block !important;
-  width: 50% !important;
-  max-width: 450px !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  text-align: left;
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
 }
-
-.task-update-form textarea,
-.task-update-form input {
-  display: block !important;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: 450px !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  text-align: left;
-}
-
-.task-update-form textarea {
-  margin-top: 20px;
-}
-
-.sprint-form-create {
-  display: block !important;
-  width: 50% !important;
-  max-width: 450px !important;
-  text-align: left;
-}
-
-.edit-sprint-form {
-  width: 50% !important;
-  max-width: 210px !important;
-  text-align: left;
-}
-
-.date-range-sprints input {
-  display: block !important;
-  width: 20% !important;
-  max-width: 170px !important;
-  text-align: left;
-}
-
 .member-form {
   height: 32px;
   width: 60%;
   min-width: 200px;
 }
-
-.edit-proj-input {
-  width: 40%;
-  min-width: 200px;
-}
-.edit-proj-textarea {
-  width: 70%;
-  min-height: 120px;
-  min-width: 200px;
-}
-
-.all-projects-header {
-  text-decoration: underline;
-  text-decoration-color: #07a6d6;
-}
-
 .site-color {
   color: #07a6d6;
 }
-
 .no-bullet-list {
   list-style-type: none;
 }
-
 .helper-btn {
   background-color: #07a6d6 !important;
   color: #343a40 !important;
 }
-
 .helper-btn:hover {
   background-color: #1d8eb1 !important;
 }
-
 /* ARROW BTN */
-
 .arrow-btn {
   border: none;
   height: 50px;
@@ -126,4 +70,142 @@
   background-image: none !important;
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
+}
+
+/* =========== PROJECT COMPONENT =========== */
+.project-input {
+  padding: 10px;
+}
+
+.edit-proj-input {
+  width: 40%;
+  min-width: 200px;
+}
+.edit-proj-textarea {
+  width: 70%;
+  min-height: 120px;
+  min-width: 200px;
+}
+
+.all-projects-header {
+  text-decoration: underline;
+  text-decoration-color: #07a6d6;
+}
+
+.project-create-form textarea,
+.project-create-form input {
+  display: block !important;
+  width: 50% !important;
+  max-width: 450px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: left;
+}
+
+/* =========== SPRINT COMPONENT =========== */
+
+.sprint-form-create {
+  display: block !important;
+  width: 50% !important;
+  max-width: 450px !important;
+  text-align: left;
+}
+
+.edit-sprint-form {
+  width: 50% !important;
+  max-width: 210px !important;
+  text-align: left;
+}
+
+.date-range-sprints input {
+  display: block !important;
+  width: 20% !important;
+  max-width: 170px !important;
+  text-align: left;
+}
+
+/* =========== TASK COMPONENT =========== */
+
+.task-update-form textarea,
+.task-update-form input {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 450px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: left;
+}
+
+.task-update-form textarea {
+  margin-top: 20px;
+}
+
+/* TASK CARD */
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  justify-content: center;
+}
+
+.cards_item {
+  display: flex;
+  padding: 1rem;
+  max-width: 420px;
+}
+
+@media (min-width: 40rem) {
+  .cards_item {
+    width: 50%;
+  }
+}
+
+@media (min-width: 56rem) {
+  .cards_item {
+    width: 33.3333%;
+  }
+}
+
+.card {
+  background: linear-gradient(to bottom left, #1786a8 40%, #07a6d6 100%);
+  border-radius: 0.25rem;
+  box-shadow: 0 20px 40px -14px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.card_content {
+  padding: 1rem;
+}
+
+.card_title {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: capitalize;
+  margin: 0px;
+}
+
+.card_text {
+  color: #ffffff;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+  font-weight: 400;
+}
+.made_by {
+  font-weight: 400;
+  font-size: 13px;
+  margin-top: 35px;
+  text-align: center;
+}
+
+.card-color {
+  background: grey !important;
 }
