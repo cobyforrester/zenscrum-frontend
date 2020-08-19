@@ -42,7 +42,7 @@ export const Register = () => {
     if (!isUnicode) {
       alert.show("Password must be unicode characters", { type: "error" });
     } else if (password.length < 2) {
-      alert.show("Password must be greater than 1 character", {
+      alert.show("No Field can be less than 1 character", {
         type: "error",
       });
     } else {
