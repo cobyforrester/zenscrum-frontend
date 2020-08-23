@@ -115,6 +115,9 @@ code {
   .create-sprint-full .label-sprint {
     font-size: 12px !important;
   }
+  .create-sprint-full input {
+    font-size: 12px !important;
+  }
 }
 
 .edit-sprint-form {
