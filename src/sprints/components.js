@@ -125,18 +125,18 @@ export const SprintComponent = ({ match }) => {
       </div>
       <div className="row justify-content-md-center">
         <div className="col-12 mb-3 text-center">
-          <form className="mx-1" onSubmit={handleSubmit}>
+          <form className="mx-1 create-sprint-full" onSubmit={handleSubmit}>
             {isClickedCreate ? (
               <>
                 <div className="d-flex justify-content-center input-group date-range-sprints input-daterange">
-                  <div className="mt-2">From:</div>
+                  <div className="mt-2 label-sprint">From:</div>
                   <input
                     type="date"
                     ref={refStartDate}
                     className="form-control mx-2"
                     defaultValue={todayDate}
                   />
-                  <div className="mt-2">To:</div>
+                  <div className="mt-2 label-sprint">To:</div>
                   <input
                     type="date"
                     ref={refEndDate}

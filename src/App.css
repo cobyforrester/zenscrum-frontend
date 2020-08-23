@@ -111,6 +111,12 @@ code {
   text-align: left;
 }
 
+@media (max-width: 420px) {
+  .create-sprint-full .label-sprint {
+    font-size: 12px !important;
+  }
+}
+
 .edit-sprint-form {
   width: 80% !important;
   max-width: 210px !important;
