@@ -440,7 +440,7 @@ export const ActionMemberBtns = (props) => {
               onClick={() => {
                 doAddRemove("remove");
               }}
-              className="helper-btn btn btn-info mx-1"
+              className="helper-btn btn btn-info mx-1 mt-1"
             >
               Remove User
             </button>
@@ -449,7 +449,7 @@ export const ActionMemberBtns = (props) => {
                 refMemberForm.current.value = "";
                 setIsClicked(false);
               }}
-              className="btn btn-secondary mx-1"
+              className="btn btn-secondary mx-1 mt-1"
             >
               Cancel
             </button>
