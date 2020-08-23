@@ -115,6 +115,7 @@ code {
   width: 50% !important;
   max-width: 210px !important;
   text-align: left;
+  min-width: 150px !important;
 }
 
 .date-range-sprints input {

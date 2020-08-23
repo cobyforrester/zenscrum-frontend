@@ -56,9 +56,6 @@ export const Register = () => {
       <div className="auth-inner">
         <form>
           <h3>Sign Up</h3>
-          <p className="text-center mt-0 mb-2">
-            (Sign Up may take a few seconds)
-          </p>
 
           <div className="form-group">
             <label>First name</label>

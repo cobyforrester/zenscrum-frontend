@@ -112,7 +112,15 @@ export const SprintComponent = ({ match }) => {
               </h1>
               <p>(Sorted by start date, and auto-numbered)</p>
             </>
-          ) : null}
+          ) : (
+            <>
+              {" "}
+              <h1 className="all-projects-header">Sprints For... </h1>
+              <p>
+                <span className="spinner-border spinner-border"></span>
+              </p>
+            </>
+          )}
         </div>
       </div>
       <div className="row justify-content-md-center">
@@ -195,10 +203,24 @@ export const SprintComponent = ({ match }) => {
         match={match}
         auth={auth}
       />
-      {!sprintsLoading && sprints.length === 0 && !isClickedCreate ? (
-        <h3 className="mt-3 text-center">
+      {!sprintsLoading &&
+      sprints.length === 0 &&
+      !isClickedCreate &&
+      project.user.username === auth.user.username ? (
+        <h3 className="mt-3 text-center mx-1">
           No Sprints? Click on "NEW SPRINT" above to create a new sprint!
         </h3>
+      ) : null}
+      {sprintsLoading ? (
+        <p className="mt-3 text-center mx-1">
+          <span className="spinner-border spinner-border"></span>
+        </p>
+      ) : null}
+      {!sprintsLoading &&
+      sprints.length === 0 &&
+      !isClickedCreate &&
+      project.user.username !== auth.user.username ? (
+        <h3 className="mt-3 text-center mx-1">No Sprints Available!</h3>
       ) : null}
     </div>
   );
@@ -206,24 +228,31 @@ export const SprintComponent = ({ match }) => {
 
 // All Below for box view
 export const SprintsList = (props) => {
-  const { setSprints, sprints, setSprintsLoading, project, match, auth } = props;
+  const {
+    setSprints,
+    sprints,
+    setSprintsLoading,
+    project,
+    match,
+    auth,
+  } = props;
   const alert = useAlert();
   const authToken = useSelector((state) => state.auth.token);
 
   useEffect(() => {
-    if(auth.isAuthenticated) {
-    let headers = { Authorization: `Token ${authToken}` };
-    lookup("get", `sprints/${match.params.project_id}/`, {}, headers)
-      .then((response) => {
-        setSprints(response.data);
-        setSprintsLoading(false);
-      })
-      .catch((error) => {
-        console.log(error);
-        alert.show("Database Error: Trouble loading sprints", {
-          type: "error",
+    if (auth.isAuthenticated) {
+      let headers = { Authorization: `Token ${authToken}` };
+      lookup("get", `sprints/${match.params.project_id}/`, {}, headers)
+        .then((response) => {
+          setSprints(response.data);
+          setSprintsLoading(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          alert.show("Database Error: Trouble loading sprints", {
+            type: "error",
+          });
         });
-      });
     }
   }, [alert, authToken, setSprints, setSprintsLoading, match, auth]);
 
@@ -409,7 +438,7 @@ export const Sprint = (props) => {
                       onClick={() => {
                         setIsEdtSprintClicked(false);
                       }}
-                      className="btn btn-secondary mx-1"
+                      className="btn btn-secondary mx-1 mt-1"
                     >
                       Cancel
                     </button>
@@ -464,7 +493,7 @@ export const ActionMemberBtns = (props) => {
               onClick={() => {
                 setIsEdtSprintClicked(true);
               }}
-              className="brk-btn mx-1"
+              className="brk-btn mx-1 mt-1"
             >
               Edit Sprint
             </button>
@@ -475,7 +504,7 @@ export const ActionMemberBtns = (props) => {
                   "Are you sure you wish to delete this Sprint?\n This cannot be undone."
                 ) && doDelete();
               }}
-              className="brk-btn mx-1"
+              className="brk-btn mx-1 mt-1"
             >
               Delete
             </button>

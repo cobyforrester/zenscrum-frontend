@@ -48,9 +48,6 @@ export const Login = () => {
       <div className="auth-inner">
         <form>
           <h3 className="mb-0">Sign In</h3>
-          <p className="text-center mt-0 mb-2">
-            (Sign in may take a few seconds)
-          </p>
           <div className="form-group">
             <label>Username</label>
             <input

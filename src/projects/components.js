@@ -131,9 +131,14 @@ export const ProjectComponent = () => {
         auth={auth}
       />
       {!projectsLoading && projects.length === 0 && !isClickedCreate ? (
-        <h3 className="mt-3 text-center">
+        <h3 className="mt-3 text-center mx-1">
           No Projects? Click on "NEW PROJECT" above to create a new project!
         </h3>
+      ) : null}
+      {projectsLoading ? (
+        <p className="mt-3 text-center mx-1">
+          <span className="spinner-border spinner-border"></span>
+        </p>
       ) : null}
     </div>
   );
@@ -146,19 +151,19 @@ export const ProjectsList = (props) => {
   const authToken = useSelector((state) => state.auth.token);
 
   useEffect(() => {
-    if(auth.isAuthenticated) {
-    let headers = { Authorization: `Token ${authToken}` };
-    lookup("get", "projects/", {}, headers)
-      .then((response) => {
-        setProjects(response.data);
-        setProjectsLoading(false);
-      })
-      .catch((error) => {
-        console.log(error);
-        alert.show("Database Error: Trouble loading projects", {
-          type: "error",
+    if (auth.isAuthenticated) {
+      let headers = { Authorization: `Token ${authToken}` };
+      lookup("get", "projects/", {}, headers)
+        .then((response) => {
+          setProjects(response.data);
+          setProjectsLoading(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          alert.show("Database Error: Trouble loading projects", {
+            type: "error",
+          });
         });
-      });
     }
   }, [alert, authToken, setProjects, setProjectsLoading, auth]);
 
@@ -316,7 +321,7 @@ export const Project = (props) => {
                       onClick={() => {
                         setIsEdtProjectClicked(false);
                       }}
-                      className="btn btn-secondary mx-1"
+                      className="btn btn-secondary mx-1 mt-1"
                     >
                       Cancel
                     </button>
@@ -463,7 +468,7 @@ export const ActionMemberBtns = (props) => {
                 onClick={() => {
                   setIsEdtProjectClicked(true);
                 }}
-                className="brk-btn mx-1"
+                className="brk-btn mx-1 mt-1"
               >
                 Edit Project
               </button>
@@ -484,7 +489,7 @@ export const ActionMemberBtns = (props) => {
                     "Are you sure you wish to delete this project?\n This cannot be undone."
                   ) && doDelete();
                 }}
-                className="brk-btn mx-1"
+                className="brk-btn mx-1 mt-1"
               >
                 Delete
               </button>

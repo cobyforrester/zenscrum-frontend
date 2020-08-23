@@ -154,9 +154,14 @@ export const TaskComponent = ({ match }) => {
         />
       </ul>
       {!tasksLoading && tasks.length === 0 && !isClickedCreate ? (
-        <h3 className="mt-3 text-center">
+        <h3 className="mt-3 text-center mx-1">
           No Tasks? Click on "NEW TASK" above to create a new task!
         </h3>
+      ) : null}
+      {tasksLoading ? (
+        <p className="mt-3 text-center mx-1">
+          <span className="spinner-border spinner-border"></span>
+        </p>
       ) : null}
     </div>
   );
