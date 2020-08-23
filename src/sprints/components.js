@@ -125,7 +125,7 @@ export const SprintComponent = ({ match }) => {
       </div>
       <div className="row justify-content-md-center">
         <div className="col-12 mb-3 text-center">
-          <form className="" onSubmit={handleSubmit}>
+          <form className="mx-1" onSubmit={handleSubmit}>
             {isClickedCreate ? (
               <>
                 <div className="d-flex justify-content-center input-group date-range-sprints input-daterange">
