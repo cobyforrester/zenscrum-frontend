@@ -231,7 +231,7 @@ export const Task = (props) => {
       };
       let headers = { Authorization: `Token ${authToken}` };
 
-      lookup("post", `tasks/${task.id}/update/`, data, headers)
+      lookup("patch", `tasks/${task.id}/update/`, data, headers)
         .then((response) => {
           alert.show(`Task was successfully updated!`, { type: "success" });
           let tmpElem = null;
@@ -387,7 +387,7 @@ export const ActionMemberBtns = (props) => {
 
   const doDelete = () => {
     let headers = { Authorization: `Token ${auth.token}` };
-    lookup("post", `tasks/${task.id}/delete/`, {}, headers)
+    lookup("delete", `tasks/${task.id}/delete/`, {}, headers)
       .then((response) => {
         setTasks(
           tasks.filter((item) => {

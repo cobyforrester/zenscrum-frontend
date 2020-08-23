@@ -301,7 +301,7 @@ export const Sprint = (props) => {
       };
       let headers = { Authorization: `Token ${authToken}` };
 
-      lookup("post", `sprints/${sprint.id}/update/`, data, headers)
+      lookup("patch", `sprints/${sprint.id}/update/`, data, headers)
         .then((response) => {
           alert.show(`Sprint was successfully updated!`, { type: "success" });
           let tmpElem = null;
@@ -467,7 +467,7 @@ export const ActionMemberBtns = (props) => {
 
   const doDelete = () => {
     let headers = { Authorization: `Token ${auth.token}` };
-    lookup("post", `sprints/${sprint.id}/delete/`, {}, headers)
+    lookup("delete", `sprints/${sprint.id}/delete/`, {}, headers)
       .then((response) => {
         setSprints(
           sprints.filter((item) => {

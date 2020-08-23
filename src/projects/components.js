@@ -204,7 +204,7 @@ export const Project = (props) => {
       };
       let headers = { Authorization: `Token ${authToken}` };
 
-      lookup("post", `projects/${project.id}/update/`, data, headers)
+      lookup("patch", `projects/${project.id}/update/`, data, headers)
         .then((response) => {
           alert.show(
             `Project "${response.data.title}" was successfully updated!`,
@@ -353,7 +353,7 @@ export const ActionMemberBtns = (props) => {
 
   const doDelete = () => {
     let headers = { Authorization: `Token ${auth.token}` };
-    lookup("post", `projects/${project.id}/delete/`, {}, headers)
+    lookup("delete", `projects/${project.id}/delete/`, {}, headers)
       .then((response) => {
         setProjects(
           projects.filter((item) => {
