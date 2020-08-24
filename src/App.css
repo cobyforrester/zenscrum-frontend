@@ -139,7 +139,7 @@ code {
 .task-update-form input {
   display: block !important;
   width: 100% !important;
-  height: 100% !important;
+  min-height: 38px;
   max-width: 450px !important;
   margin-left: auto !important;
   margin-right: auto !important;
@@ -148,6 +148,7 @@ code {
 
 .task-update-form textarea {
   margin-top: 20px;
+  height: 200px !important;
 }
 
 /* TASK CARD */
@@ -216,5 +217,5 @@ code {
 }
 
 .card-color {
-  background: grey !important;
+  background: linear-gradient(to bottom left, #575858 40%, #727475 100%);
 }

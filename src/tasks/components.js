@@ -418,7 +418,7 @@ export const ActionMemberBtns = (props) => {
               "Are you sure you wish to delete this Task?\n This cannot be undone."
             ) && doDelete();
           }}
-          className="btn btn-dark mx-1"
+          className="btn btn-dark mx-1 mt-1"
         >
           Delete
         </button>
